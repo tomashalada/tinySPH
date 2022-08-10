@@ -1,0 +1,13 @@
+add_definitions(-D_USE_MATH_DEFINES)
+
+include_directories("../../libs/include")
+include_directories("../../src")
+include_directories("../../src/general")
+include_directories("../../src/WCSPH")
+
+add_executable(dambreak2D_DBCsimple
+    main.cpp
+)
+
+find_package(OpenMP REQUIRED)
+target_link_libraries(dambreak2D_DBCsimple CompactNSearch OpenMP::OpenMP_CXX)
