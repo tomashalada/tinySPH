@@ -8,6 +8,7 @@
 //-----------------------------------------------------------------------------------//
 
 #include "variables.hpp"
+#include <cmath>
 
 //-----------------------------------------------------------------------------------//
 
@@ -44,10 +45,19 @@ struct DT_Molteni{
 
 struct DT_Fourtakas{
 
-  static double Psi()
+  static double Psi(
+  InteractionData<double, double> &I,
+  InteractionData<double, double> &J,
+  ConstantVariables &C,
+  double drs)
   {
+
     double D;
+    double dp_hydrostatic = 1. + (I.r.z - J.r.z)* C.rho0 * 9.81 / C.cb;
+    double drhoH = C.rho0 * pow(dp_hydrostatic, 1./7) - C.rho0;
+    D = 2. * C.c0 *C.h * C.delta * ((J.rho - I.rho) - drhoH)/(drs*drs);
     return D;
+
   }
 
 };
