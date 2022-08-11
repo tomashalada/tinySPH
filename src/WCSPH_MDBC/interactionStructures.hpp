@@ -117,7 +117,8 @@ void InteractionDataGhostNode<T, S>::CopyBoundaryDataOut(BoundVars<T, S> &vars, 
   if (A.det() > 0.001 ){
     Vector3<double> gradRho = solve(A, b);
     Vector3<double> dr_bgn = vars.r[i] - vars.gn[i];
-    vars.rho[i] = gradRho.x + gradRho.y*dr_bgn.x + gradRho.z*dr_bgn.z;
+    //vars.rho[i] = gradRho.x + gradRho.y*dr_bgn.x + gradRho.z*dr_bgn.z;
+    vars.rho[i] = gradRho.x - gradRho.y*dr_bgn.x - gradRho.z*dr_bgn.z;
   }
   else if (A.a11 > 0.){
     vars.rho[i] = b.x/A.a11;
@@ -127,12 +128,9 @@ void InteractionDataGhostNode<T, S>::CopyBoundaryDataOut(BoundVars<T, S> &vars, 
   }
 
   /* Can we do something with this, please? */
-  /*
   if (vars.rho[i] < 1000.){
     vars.rho[i] = 1000.;
-    std::cout << "Density correction for boundary particle applied." << std::endl;
   }
-  */
 
 }
 
@@ -249,7 +247,8 @@ static void UpdateBoundaryData(InteractionDataGhostNode<T, S> &I,
                        0., 0., 0.};
 
   //Resolv kernel function values:
-  Vector3<double> dr = I.r - J.r; // POS_FLUID - POS_GN
+  //Vector3<double> dr = I.r - J.r; // POS_FLUID - POS_GN
+  Vector3<double> dr = I.gn - J.r; // POS_FLUID - POS_GN
   double drs = dr.length();
 
   std::pair<double, double> WF = KERNEL::WF(drs, h);

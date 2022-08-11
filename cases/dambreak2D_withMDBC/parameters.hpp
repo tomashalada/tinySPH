@@ -11,7 +11,7 @@ unsigned int stepEnd = ceil(endTime/initTimeStep);
 
 //-----------------------------------------------------------------------------------//
 
-unsigned int saveOutput = 1000; //steps
+unsigned int saveOutput = 250; //steps
  std::string casePath = "/home/tomas/Documents/temp/tinySPH/dambreak2D_withMDBC";
 
 //-----------------------------------------------------------------------------------//

@@ -58,7 +58,8 @@ if (USE_DOUBLE_PRECISION)
 	add_definitions( -DUSE_DOUBLE)
 endif (USE_DOUBLE_PRECISION)
 
-# Testcases
+### Testcases
+# Dambreak
 option(BUILD_DAMBREAK2D_DBC "Build example of how to use this library."
 		ON)
 if(BUILD_DAMBREAK2D_DBC)
@@ -82,3 +83,10 @@ option(BUILD_DAMBREAK2D_MDBC "Build example of how to use this library."
 if(BUILD_DAMBREAK2D_MDBC)
     add_subdirectory(cases/dambreak2D_withMDBC dambreak2D_withMDBC)
 endif(BUILD_DAMBREAK2D_MDBC)
+
+# Stillwater
+option(BUILD_STILLWATER2D_MDBC "Build example of how to use this library."
+		ON)
+if(BUILD_STILLWATER2D_MDBC)
+    add_subdirectory(cases/stillwater2D_withMDBC stillwater2D_withMDBC)
+endif(BUILD_STILLWATER2D_MDBC)

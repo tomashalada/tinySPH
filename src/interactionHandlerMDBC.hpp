@@ -36,6 +36,10 @@ public:
                 BoundVars<double, double> &WCSPHbound,
                 ConstantVariables WCSPHconstants);
 
+  void UpdateBoundary(Variables<double, double> &WCSPHfluid,
+                      BoundVars<double, double> &WCSPHbound,
+                      ConstantVariables WCSPHconstants);
+
   InteractionHandler(double h,
                      Variables<double, double> &WCSPHfluid,
                      BoundVars<double, double> &WCSPHbound);
@@ -77,8 +81,12 @@ KERNEL>::InteractionHandler(double h,
   positions_id_ghostNodes = nsearch.add_point_set(&WCSPHbound.gn.front().x, WCSPHbound.N);
 
   nsearch.set_active(positions_id_wall, positions_id_ghostNodes, false);
+  nsearch.set_active(positions_id_wall, positions_id_wall, false);
   nsearch.set_active(positions_id_wall, positions_id, false);
+
+  nsearch.set_active(positions_id_ghostNodes, positions_id_ghostNodes, false);
   nsearch.set_active(positions_id_ghostNodes, positions_id_wall, false);
+
   nsearch.set_active(positions_id, positions_id_ghostNodes, false);
 
 }
@@ -148,12 +156,61 @@ KERNEL>::Interact(Variables<double, double> &WCSPHfluid,
     InteractionDataGhostNode<double, double> ptcI;
     InteractionData<double, double> ptcJ;
     ptcI.CopyBoundaryDataIn(WCSPHbound, i);
+
     for (size_t j = 0; j < ps_2.n_neighbors(positions_id, i); ++j)
     {
       // Return the point id of the jth neighbor of the ith particle in the point_set_1.
       const unsigned int pid = ps_2.neighbor(positions_id, i, j);
       ptcJ.CopyDataIn(WCSPHfluid, pid);
       BOUND_UPDATE::template UpdateBoundaryData<double, double, KERNEL, DIFFUSIVE_TERM, VISOUCS_TERM>(ptcI, ptcJ, WCSPHconstants);
+
+    }
+
+    ptcI.CopyBoundaryDataOut(WCSPHbound, i);
+
+  }
+
+}
+
+//-----------------------------------------------------------------------------------//
+
+template<
+typename FLUID_FLUID,
+typename FLUID_BOUND,
+typename BOUND_UPDATE,
+typename DIFFUSIVE_TERM,
+typename VISOUCS_TERM,
+typename KERNEL
+>
+void InteractionHandler<
+FLUID_FLUID,
+FLUID_BOUND,
+BOUND_UPDATE,
+DIFFUSIVE_TERM,
+VISOUCS_TERM,
+KERNEL>::UpdateBoundary(Variables<double, double> &WCSPHfluid,
+                        BoundVars<double, double> &WCSPHbound,
+                        ConstantVariables WCSPHconstants)
+{
+
+  nsearch.find_neighbors();
+
+  // Update boundary particles
+  CompactNSearch::PointSet const& ps_2 = nsearch.point_set(positions_id_ghostNodes);
+  #pragma omp parallel for schedule(static)
+  for (int i = 0; i < ps_2.n_points(); ++i)
+  {
+
+    InteractionDataGhostNode<double, double> ptcI;
+    InteractionData<double, double> ptcJ;
+    ptcI.CopyBoundaryDataIn(WCSPHbound, i);
+    for (size_t j = 0; j < ps_2.n_neighbors(positions_id, i); ++j)
+    {
+      // Return the point id of the jth neighbor of the ith particle in the point_set_1.
+      const unsigned int pid = ps_2.neighbor(positions_id, i, j);
+      ptcJ.CopyDataIn(WCSPHfluid, pid);
+      BOUND_UPDATE::template UpdateBoundaryData<double, double, KERNEL, DIFFUSIVE_TERM, VISOUCS_TERM>(ptcI, ptcJ, WCSPHconstants);
+
     }
 
     ptcI.CopyBoundaryDataOut(WCSPHbound, i);

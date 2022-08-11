@@ -89,8 +89,6 @@ int main(){
   WendlandKernel
   > WCSPHmeasurement(WCSPHconstants.h*2, WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound);
 
-
-
 //-----------------------------------------------------------------------------------//
 // Symplectic integrator
 
