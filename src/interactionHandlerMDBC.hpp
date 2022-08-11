@@ -163,11 +163,9 @@ KERNEL>::Interact(Variables<double, double> &WCSPHfluid,
       const unsigned int pid = ps_2.neighbor(positions_id, i, j);
       ptcJ.CopyDataIn(WCSPHfluid, pid);
       BOUND_UPDATE::template UpdateBoundaryData<double, double, KERNEL, DIFFUSIVE_TERM, VISOUCS_TERM>(ptcI, ptcJ, WCSPHconstants);
-
     }
 
     ptcI.CopyBoundaryDataOut(WCSPHbound, i);
-
   }
 
 }
@@ -210,11 +208,9 @@ KERNEL>::UpdateBoundary(Variables<double, double> &WCSPHfluid,
       const unsigned int pid = ps_2.neighbor(positions_id, i, j);
       ptcJ.CopyDataIn(WCSPHfluid, pid);
       BOUND_UPDATE::template UpdateBoundaryData<double, double, KERNEL, DIFFUSIVE_TERM, VISOUCS_TERM>(ptcI, ptcJ, WCSPHconstants);
-
     }
 
     ptcI.CopyBoundaryDataOut(WCSPHbound, i);
-
   }
 
 }
