@@ -139,18 +139,18 @@ with open("stillwater_ghostNodes.ptcs", "w") as f:
 
 #-------------------------------------------------------------------------------------#
 
-interpolationL_n = round(interpolationPlaneL/(dp/interpolationFactor))
-interpolationH_n = round(interpolationPlaneH/(dp/interpolationFactor))
+interpolationL_n = int(np.floor(interpolationPlaneL/(dp/interpolationFactor)))
+interpolationH_n = int(np.floor(interpolationPlaneH/(dp/interpolationFactor)))
 
 IN_rx = []; IN_ry = []; IN_rz = []
 
 #-------------------------------------------------------------------------------------#
 
-for x in range(interpolationL_n):
-  for z in range(interpolationH_n):
-    IN_rx.append((dp/interpolationFactor)*(x + 1))
+for x in range(interpolationL_n-1):
+  for z in range(interpolationH_n-1):
+    IN_rx.append((dp/interpolationFactor)*x + dp)
     IN_ry.append(0.)
-    IN_rz.append((dp/interpolationFactor)*(z + 1))
+    IN_rz.append((dp/interpolationFactor)*z + dp)
 
 #-------------------------------------------------------------------------------------#
 

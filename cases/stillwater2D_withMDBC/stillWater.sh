@@ -101,3 +101,10 @@ echo ... Fluid postprocessing DONE.
 
 #-------------------------------------------------------------------------------------#
 
+inputDataFile=$SaveResults/OUTPUT/TotalKineticEnergy.dat
+outputFileName=$SaveResults/OUTPUT/TotalKineticEnergy.png
+
+gnuplot -e "inputDataFile='$inputDataFile'" -e "outputFileName='$outputFileName'" tools/plotEnergyMixGeoCut.gp
+
+#-------------------------------------------------------------------------------------#
+

@@ -46,6 +46,10 @@
 
 //-----------------------------------------------------------------------------------//
 
+#include "measureKineticEnergy.hpp"     // cutstom measurement tools
+
+//-----------------------------------------------------------------------------------//
+
 int main(){
 
   //Set the case
@@ -72,7 +76,8 @@ int main(){
   WCSPH_FLUIDFLUID,                     // fluid-fluid interaction model
   WCSPH_FLUIDBOUND_DBC,                 // fluid-wall interaction model
   WCSPH_MDBC,                           // wall particle update model
-  DT_Molteni,                           // diffusive term
+  //DT_Molteni,                           // diffusive term
+  DT_Fourtakas,                         // diffusive term
   VISCOSITY_Artificial,                 // viscosity term
   WendlandKernel                        // SPH kernel function
   > WCSPH(WCSPHconstants.h*2, WCSPHfluid, WCSPHbound);
@@ -154,6 +159,9 @@ for(int step = 0; step < stepEnd + 1; step++)
   WCSPHmeasurement.Interpolate(WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound, WCSPHconstants);
   writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(casePath + "/OUTPUT/INTERPOLATION/interpolation", step));
   }
+
+  //Custom measuretools
+  MeasureTotalKineticEnergyOfSystem(WCSPHfluid, WCSPHconstants, step*0.0001, (casePath + "/OUTPUT/TotalKineticEnergy.dat"));
 
 }
 

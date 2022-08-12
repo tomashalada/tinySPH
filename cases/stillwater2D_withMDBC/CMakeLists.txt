@@ -4,6 +4,7 @@ include_directories("../../libs/include")
 include_directories("../../src")
 include_directories("../../src/general")
 include_directories("../../src/WCSPH_MDBC")
+include_directories("measuretools")
 
 add_executable(stillwater2D_mDBC
     main.cpp

@@ -39,7 +39,7 @@ double WCSPH_EOS_Tait_pressureToDensity(double p, double c0, double rho0)
   const double rho_r = rho/rho0; //Weakly compressible state eq. relative density
 
   //Weakly compressible Tait state equation
-  rho = (pow(p / b_const + 1, 1./7) )*rho0;
+  rho = (pow(p / b_const + 1, 1./7) )*rho0 - rho0;
 
   return rho;
 
