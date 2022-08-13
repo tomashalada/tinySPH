@@ -40,6 +40,8 @@ public:
                       BoundVars<double, double> &WCSPHbound,
                       ConstantVariables WCSPHconstants);
 
+  void FindNeighbors();
+
   InteractionHandler(double h,
                      Variables<double, double> &WCSPHfluid,
                      BoundVars<double, double> &WCSPHbound);
@@ -212,6 +214,29 @@ KERNEL>::UpdateBoundary(Variables<double, double> &WCSPHfluid,
 
     ptcI.CopyBoundaryDataOut(WCSPHbound, i);
   }
+
+}
+
+//-----------------------------------------------------------------------------------//
+
+template<
+typename FLUID_FLUID,
+typename FLUID_BOUND,
+typename BOUND_UPDATE,
+typename DIFFUSIVE_TERM,
+typename VISOUCS_TERM,
+typename KERNEL
+>
+void InteractionHandler<
+FLUID_FLUID,
+FLUID_BOUND,
+BOUND_UPDATE,
+DIFFUSIVE_TERM,
+VISOUCS_TERM,
+KERNEL>::FindNeighbors()
+{
+
+  nsearch.find_neighbors();
 
 }
 

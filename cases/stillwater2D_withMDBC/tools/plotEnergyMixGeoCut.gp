@@ -13,7 +13,7 @@ set encoding utf8
 #set xtics 0.2
 set logscale y
 set format y "10^{%L}"
-set xrange [0:10]
+set xrange [0:20]
 set yrange [1e-7:1e-1]
 set key top right
 #set key at 19., 0.45
