@@ -4,15 +4,15 @@
 //
 //-----------------------------------------------------------------------------------//
 
-double endTime = 0.51; //seconds
-//double endTime = 0.0001; //seconds
-double initTimeStep = 0.00005; //seconds
-unsigned int stepEnd = ceil(endTime/initTimeStep);
+ double endTime = 0.51; //seconds
+ double initTimeStep = 0.000035; //seconds
+ unsigned int stepEnd = ceil(endTime/initTimeStep);
 
 //-----------------------------------------------------------------------------------//
 
-unsigned int saveOutput = 250; //steps
- std::string casePath = "/home/tomas/Documents/temp/tinySPH/dambreak2D_withMDBC";
+ unsigned int saveOutput = 250; //steps
+ std::string caseFolder = "/home/tomas/Documents/testovaci/cpp/TINYSPH_lib/cases/dambreak2D_withMDBC";
+ std::string caseResults = "/home/tomas/Documents/temp/tinySPH_dev/dambreak2D_withMDBC";
 
 //-----------------------------------------------------------------------------------//
 

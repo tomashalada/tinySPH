@@ -7,7 +7,7 @@
 #-------------------------------------------------------------------------------------#
 ### Case settings
 
-SaveResults=/home/tomas/Documents/temp/tinySPH/dambreak2D_withMDBC
+SaveResults=/home/tomas/Documents/temp/tinySPH_dev/dambreak2D_withMDBC
 CaseName="CASE_DAMBREAK_2D"
 
 CaseFolder=$(pwd)
@@ -25,6 +25,7 @@ mkdir $SaveResults/OUTPUT
 mkdir $SaveResults/OUTPUT/FLUID
 mkdir $SaveResults/OUTPUT/BOUND
 
+./../../tools/parseCaseResults.sh $CaseFolder parameters.hpp
 ./../../tools/parseCasePath.sh $SaveResults parameters.hpp
 
 echo ... DONE.

@@ -133,7 +133,6 @@ KERNEL>::Interpolate(Variables<double, double> &WCSPHnodes,
       ptcJ.CopyDataIn(WCSPHfluid, pid);
       INTERPOLATION::template FluidFluidInterpolation<double, double, KERNEL>(ptcI, ptcJ, WCSPHconstants);
     }
-    std::cout << std::endl;
 
     /*
     //Get point set 1 neighbors of point set 2.

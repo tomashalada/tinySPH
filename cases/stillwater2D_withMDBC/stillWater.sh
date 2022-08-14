@@ -7,7 +7,7 @@
 #-------------------------------------------------------------------------------------#
 ### Case settings
 
-SaveResults=/home/tomas/Documents/temp/tinySPH/stillwater2D_withMDBC
+SaveResults=/home/tomas/Documents/temp/tinySPH_dev/stillwater2D_withMDBC
 CaseName="CASE_STILLWATER_2D"
 
 CaseFolder=$(pwd)
@@ -26,6 +26,7 @@ mkdir $SaveResults/OUTPUT/FLUID
 mkdir $SaveResults/OUTPUT/BOUND
 mkdir $SaveResults/OUTPUT/INTERPOLATION
 
+./../../tools/parseCaseResults.sh $CaseFolder parameters.hpp
 ./../../tools/parseCasePath.sh $SaveResults parameters.hpp
 
 echo ... DONE.

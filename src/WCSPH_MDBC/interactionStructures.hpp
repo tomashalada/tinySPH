@@ -56,6 +56,8 @@ struct InteractionDataGhostNode : InteractionData<T, S>{
 
   Vector3<double> b = {0., 0., 0.};
 
+  Vector3<double> v = {0., 0., 0.};
+
   void CopyBoundaryDataOut(BoundVars<T,S> &vars,  unsigned int i);
 
 };
@@ -88,7 +90,6 @@ void InteractionData<T, S>::CopyBoundaryDataIn(BoundVars<T, S> &vars,  unsigned 
 
 }
 
-
 //----------------------------------------------------------------------------------//
 
 template<typename T, typename S>
@@ -118,12 +119,15 @@ void InteractionDataGhostNode<T, S>::CopyBoundaryDataOut(BoundVars<T, S> &vars, 
     Vector3<double> gradRho = solve(A, b);
     Vector3<double> dr_bgn = vars.r[i] - vars.gn[i];
     vars.rho[i] = gradRho.x + gradRho.y*dr_bgn.x + gradRho.z*dr_bgn.z;
+    vars.v[i] = (-1)*v/A.a11;
   }
   else if (A.a11 > 0.){
     vars.rho[i] = b.x/A.a11;
+    vars.v[i] = (-1)*v/A.a11;
   }
   else{
     vars.rho[i] = 1000.;
+    vars.v[i] = {0., 0., 0.};
   }
 
   /* Can we do something with this, please? */
@@ -263,6 +267,55 @@ static void UpdateBoundaryData(InteractionDataGhostNode<T, S> &I,
   I.A += A;
 
   I.b.x += W*m; I.b.y += gradW.x*m; I.b.z += gradW.z*m;
+
+}
+
+};
+
+//-----------------------------------------------------------------------------------//
+
+struct WCSPH_MDBCvelocity{
+
+template<
+typename T,
+typename S,
+typename KERNEL,
+typename DIFF_TERM,
+typename VISCO_TERM
+>
+static void UpdateBoundaryData(InteractionDataGhostNode<T, S> &I,
+                               InteractionData<T, S> &J,
+                               ConstantVariables &C)
+{
+
+  double h = C.h; double m = C.m; double rho0 = C.rho0;
+  double c0 = C.c0; double eta = C.eta; double eps = 0.001;
+  double delta = C.delta;
+
+  Matrix3<double> A = {0., 0., 0.,
+                       0., 0., 0.,
+                       0., 0., 0.};
+
+  //Resolv kernel function values:
+  Vector3<double> dr = J.r - I.gn; // POS_FLUID - POS_GN
+  double drs = dr.length();
+
+  std::pair<double, double> WF = KERNEL::WF(drs, h);
+  double W = WF.first;
+  Vector3<double> gradW = dr*WF.second;
+
+  //continuuity equation
+  double V = m/J.rho;
+
+  A.a11 = W*V;       A.a12 = dr.x*W*V;       A.a13 = dr.z*W*V;
+  A.a21 = gradW.x*V; A.a22 = dr.x*gradW.x*V; A.a23 = dr.z*gradW.x*V;
+  A.a31 = gradW.z*V; A.a32 = dr.x*gradW.z*V; A.a33 = dr.z*gradW.z*V;
+
+  I.A += A;
+
+  I.b.x += W*m; I.b.y += gradW.x*m; I.b.z += gradW.z*m;
+
+  I.v += J.v*W*V;
 
 }
 

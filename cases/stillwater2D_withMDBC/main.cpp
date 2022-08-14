@@ -64,19 +64,20 @@ int main(){
 
   //Read fluid data
   FluidVars<double, double> WCSPHfluid;
-  WCSPHfluid.initializeWithGeometryFile("/home/tomas/Documents/testovaci/cpp/TINYSPH_lib/cases/stillwater2D_withMDBC/stillwater_fluid.ptcs");
-  			std::cout << "Number of fluid particles: " << WCSPHfluid.N << std::endl;
+  WCSPHfluid.initializeWithGeometryFile(caseFolder + "/stillwater_fluid.ptcs");
+  std::cout << "Number of fluid particles: " << WCSPHfluid.N << std::endl;
 
   //Read boundary data
   BoundVars<double, double> WCSPHbound;
-  WCSPHbound.initializeWithGeometryFile("/home/tomas/Documents/testovaci/cpp/TINYSPH_lib/cases/stillwater2D_withMDBC/stillwater_wall.ptcs");
-  			std::cout << "Number of boundary particles: " << WCSPHbound.N << std::endl;
+  WCSPHbound.initializeWithGeometryFile(caseFolder + "/stillwater_wall.ptcs");
+  std::cout << "Number of boundary particles: " << WCSPHbound.N << std::endl;
 
   InteractionHandler<
   WCSPH_FLUIDFLUID,                     // fluid-fluid interaction model
   WCSPH_FLUIDBOUND_DBC,                 // fluid-wall interaction model
-  WCSPH_MDBC,                           // wall particle update model
-  //DT_Molteni,                           // diffusive term
+  //WCSPH_MDBC,                         // wall particle update model
+  WCSPH_MDBCvelocity,                   // wall particle update model
+  //DT_Molteni,                         // diffusive term
   DT_Fourtakas,                         // diffusive term
   VISCOSITY_Artificial,                 // viscosity term
   WendlandKernel                        // SPH kernel function
@@ -86,7 +87,7 @@ int main(){
 
   //Interpolation nodes
   FluidVars<double, double> WCSPHinterpolationPlane;
-  WCSPHinterpolationPlane.initializeWithGeometryFile("/home/tomas/Documents/testovaci/cpp/TINYSPH_lib/cases/stillwater2D_withMDBC/stillwater_interpolationPlane.ptcs");
+  WCSPHinterpolationPlane.initializeWithGeometryFile(caseFolder + "/stillwater_interpolationPlane.ptcs");
   std::cout << "Number of nodes in interpolation plane: " << WCSPHinterpolationPlane.N << std::endl;
 
   PostProcessingHandler<
@@ -126,8 +127,8 @@ for(int step = 0; step < stepEnd + 1; step++)
   WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
 
   if(step % saveOutput == 0){
-    writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(casePath + "/OUTPUT/FLUID/fluid", step));
-    writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(casePath + "/OUTPUT/BOUND/bound", step));
+    writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/FLUID/fluid", step));
+    writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/BOUND/bound", step));
   }
 
 }
@@ -153,15 +154,15 @@ for(int step = 0; step < stepEnd + 1; step++)
   }
 
   if(step % saveOutput == 0){
-    writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(casePath + "/OUTPUT/FLUID/fluid", step));
-    writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(casePath + "/OUTPUT/BOUND/bound", step));
+    writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/FLUID/fluid", step));
+    writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/BOUND/bound", step));
 
   WCSPHmeasurement.Interpolate(WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound, WCSPHconstants);
-  writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(casePath + "/OUTPUT/INTERPOLATION/interpolation", step));
+  writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/INTERPOLATION/interpolation", step));
   }
 
   //Custom measuretools
-  MeasureTotalKineticEnergyOfSystem(WCSPHfluid, WCSPHconstants, step*0.0001, (casePath + "/OUTPUT/TotalKineticEnergy.dat"));
+  MeasureTotalKineticEnergyOfSystem(WCSPHfluid, WCSPHconstants, step*0.0001, (caseResults + "/OUTPUT/TotalKineticEnergy.dat"));
 
 }
 

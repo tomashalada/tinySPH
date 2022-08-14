@@ -50,7 +50,7 @@ int main(){
 
   //Set the case
   ConstantVariables WCSPHconstants(
-  0.0070711, //h
+  0.0070711*1.3, //h
   0.025, //m
   34.3, //cs
   0.02, //eta
@@ -60,12 +60,12 @@ int main(){
 
   //Read fluid data
   FluidVars<double, double> WCSPHfluid;
-  WCSPHfluid.initializeWithGeometryFile("/home/tomas/Documents/testovaci/cpp/TINYSPH_lib/cases/dambreak2D_withBI/dambreak_fluid.ptcs");
+  WCSPHfluid.initializeWithGeometryFile(caseFolder + "/dambreak_fluid.ptcs");
   std::cout << "Number of fluid particles: " << WCSPHfluid.N << std::endl;
 
   //Read boundary data
   BoundVars<double, double> WCSPHbound;
-  WCSPHbound.initializeWithGeometryFile("/home/tomas/Documents/testovaci/cpp/TINYSPH_lib/cases/dambreak2D_withBI/dambreak_wall.ptcs");
+  WCSPHbound.initializeWithGeometryFile(caseFolder + "/dambreak_wall.ptcs");
   std::cout << "Number of boundary particles: " << WCSPHbound.N << std::endl;
 
   InteractionHandler<
@@ -81,7 +81,7 @@ int main(){
 
   //Interpolation nodes
   FluidVars<double, double> WCSPHinterpolationPlane;
-  WCSPHinterpolationPlane.initializeWithGeometryFile("/home/tomas/Documents/testovaci/cpp/TINYSPH_lib/cases/dambreak2D_withBI/dambreak_interpolationPlane.ptcs");
+  WCSPHinterpolationPlane.initializeWithGeometryFile(caseFolder + "/dambreak_interpolationPlane.ptcs");
   std::cout << "Number of nodes in interpolation plane: " << WCSPHinterpolationPlane.N << std::endl;
 
   PostProcessingHandler<
@@ -92,35 +92,37 @@ int main(){
 //-----------------------------------------------------------------------------------//
 // Symplectic integrator
 
-//:SymplecticScheme WCSPHSymplectic(&WCSPHfluid, 0.00003);
-//:
-//:for(int step = 0; step < stepEnd + 1; step++)
-//:{
-//:
-//:	std::cout << "STEP: " << step << std::endl;
-//:	DensityToPressure(WCSPHfluid, WCSPHconstants);
-//:	DensityToPressure(WCSPHbound, WCSPHconstants);
-//:
-//:	WCSPHSymplectic.ComputePredictor();
-//:	WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
-//:
-//:	DensityToPressure(WCSPHfluid, WCSPHconstants);
-//:	DensityToPressure(WCSPHbound, WCSPHconstants);
-//:
-//:	WCSPHSymplectic.ComputeCorrector();
-//:	WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
-//:
-//:	if(step % saveOutput == 0){
-//:	writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(casePath + "/OUTPUT/FLUID/fluid", step));
-//:	writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(casePath + "/OUTPUT/BOUND/bound", step));
-//:	}
-//:
-//:}
+/*
+SymplecticScheme WCSPHSymplectic(&WCSPHfluid, initTimeStep);
+
+for(int step = 0; step < stepEnd + 1; step++)
+{
+
+	std::cout << "STEP: " << step << std::endl;
+	DensityToPressure(WCSPHfluid, WCSPHconstants);
+	DensityToPressure(WCSPHbound, WCSPHconstants);
+
+	WCSPHSymplectic.ComputePredictor();
+	WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
+
+	DensityToPressure(WCSPHfluid, WCSPHconstants);
+	DensityToPressure(WCSPHbound, WCSPHconstants);
+
+	WCSPHSymplectic.ComputeCorrector();
+	WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
+
+	if(step % saveOutput == 0){
+	writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/FLUID/fluid", step));
+	writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/BOUND/bound", step));
+	}
+
+}
+*/
 
 //-----------------------------------------------------------------------------------//
 // Verlet integrator
 
-VerletScheme WCSPHVerlet(&WCSPHfluid, 0.00003);
+VerletScheme WCSPHVerlet(&WCSPHfluid, initTimeStep);
 
 for(int step = 0; step < stepEnd + 1; step++)
 {
@@ -137,11 +139,11 @@ for(int step = 0; step < stepEnd + 1; step++)
   }
 
   if(step % saveOutput == 0){
-  writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(casePath + "/OUTPUT/FLUID/fluid", step));
-  writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(casePath + "/OUTPUT/BOUND/bound", step));
+  writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/FLUID/fluid", step));
+  writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/BOUND/bound", step));
 
   WCSPHmeasurement.Interpolate(WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound, WCSPHconstants);
-  writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(casePath + "/OUTPUT/INTERPOLATION/interpolation", step));
+  writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/INTERPOLATION/interpolation", step));
   }
 
 }

@@ -11,7 +11,7 @@ SaveResults=$1
 ParamFile=$2
 
 #read config file and create new path string
-CasePathLine=$(grep 'casePath' $ParamFile)
+CasePathLine=$(grep 'caseResults' $ParamFile)
 CasePathLineArray=($CasePathLine)
 CasePathLineArray[3]=\"$SaveResults\"
 NewCasePathLine=""

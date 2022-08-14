@@ -115,7 +115,7 @@ with open("dambreak_wall.ptcs", "w") as f:
                 str(box_nx[i]) + " " + str(box_ny[i]) + " " + str(box_nz[i]) +"\n")
 
 ### Generate interpolation nodes
-interpolationFactor = 2
+interpolationFactor = 1
 interpolationPlaneL = boxL
 interpolationPlaneH = fluidH
 
