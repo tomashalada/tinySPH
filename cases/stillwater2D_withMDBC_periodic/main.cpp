@@ -169,6 +169,8 @@ for(int step = 0; step < stepEnd + 1; step++)
 
   WCSPHEkinTot.WriteTotalKinetcEnergyToFile(caseResults + "/OUTPUT/TotalKineticEnergy.dat");
   WCSPHEkinTot.WriteParticleTrajectoryToFile(caseResults + "/OUTPUT/ParticleTrajectory"); //no .dat here!
+  WCSPHtrackParticles.WriteParticleVelocityToFile(caseResults + "/OUTPUT/ParticleVelocity"); //no .dat here!
+
 
   std::cout << "Done..." << std::endl;
 
