@@ -14,7 +14,7 @@ set encoding utf8
 set logscale y
 set format y "10^{%L}"
 set xrange [0:20]
-set yrange [1e-7:1e-1]
+set yrange [1e-8:1e-1]
 set key top right
 #set key at 19., 0.45
 set key box maxcols 1
