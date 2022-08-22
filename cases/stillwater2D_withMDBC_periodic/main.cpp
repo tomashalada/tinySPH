@@ -113,8 +113,9 @@ int main(){
   WendlandKernel
   > WCSPHmeasurement(WCSPHconstants.h*2, WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound);
 
-  //Measure kineticEnergy
+  //Measure kineticEnergy and particle trajectories
   MEASUREMENT_TotalKineticEnergyOfSystem WCSPHEkinTot(stepEnd, initTimeStep);
+  MEASUREMENT_TrackParticleMovement WCSPHtrackParticles(stepEnd, initTimeStep);
 
 //-----------------------------------------------------------------------------------//
 
@@ -159,6 +160,7 @@ for(int step = 0; step < stepEnd + 1; step++)
 
   //Custom measuretools
   WCSPHEkinTot.ComputeKineticEnergy(WCSPHfluid, WCSPHconstants);
+  WCSPHtrackParticles.TrackParticles(WCSPHfluid);
 
 }
 
@@ -166,6 +168,8 @@ for(int step = 0; step < stepEnd + 1; step++)
 //-----------------------------------------------------------------------------------//
 
   WCSPHEkinTot.WriteTotalKinetcEnergyToFile(caseResults + "/OUTPUT/TotalKineticEnergy.dat");
+  WCSPHEkinTot.WriteParticleTrajectoryToFile(caseResults + "/OUTPUT/ParticleTrajectory"); //no .dat here!
+
   std::cout << "Done..." << std::endl;
 
   return EXIT_SUCCESS;
