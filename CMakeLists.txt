@@ -90,3 +90,9 @@ option(BUILD_STILLWATER2D_MDBC "Build example of how to use this library."
 if(BUILD_STILLWATER2D_MDBC)
     add_subdirectory(cases/stillwater2D_withMDBC stillwater2D_withMDBC)
 endif(BUILD_STILLWATER2D_MDBC)
+
+option(BUILD_STILLWATER2D_MDBC_PERIODIC "Build example of how to use this library."
+		ON)
+if(BUILD_STILLWATER2D_MDBC_PERIODIC)
+    add_subdirectory(cases/stillwater2D_withMDBC_periodic stillwater2D_withMDBC_periodic)
+endif(BUILD_STILLWATER2D_MDBC_PERIODIC)

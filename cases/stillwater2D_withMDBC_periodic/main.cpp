@@ -26,7 +26,8 @@
 //-----------------------------------------------------------------------------------//
 
 #include "variables.hpp"                // variables of used model
-#include "interactionHandlerMDBC.hpp"   // interaction manager
+//#include "interactionHandlerMDBC.hpp" // interaction manager
+#include "interactionHandlerMDBC_withPeriodicBC.hpp"   // interaction manager with aux periodic BC
 #include "integration.hpp"              // integrators (connected to the model)
 
 //-----------------------------------------------------------------------------------//
@@ -47,6 +48,10 @@
 //-----------------------------------------------------------------------------------//
 
 #include "measureKineticEnergy.hpp"     // cutstom measurement tools
+
+//-----------------------------------------------------------------------------------//
+
+#include "periodicBC.hpp"
 
 //-----------------------------------------------------------------------------------//
 
@@ -72,16 +77,29 @@ int main(){
   WCSPHbound.initializeWithGeometryFile(caseFolder + "/stillwater_wall.ptcs");
   std::cout << "Number of boundary particles: " << WCSPHbound.N << std::endl;
 
+//-----------------------------------------------------------------------------------//
+
+  // InitPeriodicBC:
+  PeriodicBC WCSPHperiodic;
+  WCSPHperiodic.ApplyPeriodicBoundaryCondition(WCSPHfluid,
+                                               WCSPHbound,
+                                               0. + (WCSPHconstants.h*2.01),
+                                               0.8 - (WCSPHconstants.h*2.01),
+                                               0.+ WCSPHconstants.dp,
+                                               0.8 - WCSPHconstants.dp);
+
+//-----------------------------------------------------------------------------------//
+
   InteractionHandler<
   WCSPH_FLUIDFLUID,                     // fluid-fluid interaction model
   WCSPH_FLUIDBOUND_DBC,                 // fluid-wall interaction model
-  WCSPH_MDBC,                           // wall particle update model
-  //WCSPH_MDBCvelocity,                 // wall particle update model
+  //WCSPH_MDBC,                         // wall particle update model
+  WCSPH_MDBCvelocity,                   // wall particle update model
   //DT_Molteni,                         // diffusive term
   DT_Fourtakas,                         // diffusive term
   VISCOSITY_Artificial,                 // viscosity term
   WendlandKernel                        // SPH kernel function
-  > WCSPH(WCSPHconstants.h*2, WCSPHfluid, WCSPHbound);
+  > WCSPH(WCSPHconstants.h*2, WCSPHfluid, WCSPHbound, WCSPHperiodic);
 
 //-----------------------------------------------------------------------------------//
 
@@ -95,7 +113,6 @@ int main(){
   WendlandKernel
   > WCSPHmeasurement(WCSPHconstants.h*2, WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound);
 
-
   //Measure kineticEnergy
   MEASUREMENT_TotalKineticEnergyOfSystem WCSPHEkinTot(stepEnd, initTimeStep);
 
@@ -105,49 +122,25 @@ int main(){
   WCSPH.UpdateBoundary(WCSPHfluid, WCSPHbound, WCSPHconstants);
 
 //-----------------------------------------------------------------------------------//
-// Symplectic integrator
-
-/*
-SymplecticScheme WCSPHSymplecticFluid(&WCSPHfluid, 0.000035);
-SymplecticScheme WCSPHSymplecticBound(&WCSPHbound, 0.000035);
-
-for(int step = 0; step < stepEnd + 1; step++)
-{
-
-  std::cout << "STEP: " << step << std::endl;
-  DensityToPressure(WCSPHfluid, WCSPHconstants);
-  DensityToPressure(WCSPHbound, WCSPHconstants);
-
-  WCSPHSymplecticFluid.ComputePredictor();
-  WCSPHSymplecticBound.ComputePredictor();
-  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
-
-  DensityToPressure(WCSPHfluid, WCSPHconstants);
-  DensityToPressure(WCSPHbound, WCSPHconstants);
-
-  WCSPHSymplecticFluid.ComputeCorrector();
-  WCSPHSymplecticBound.ComputeCorrector();
-  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
-
-  if(step % saveOutput == 0){
-    writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/FLUID/fluid", step));
-    writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/BOUND/bound", step));
-  }
-
-}
-*/
-
-//-----------------------------------------------------------------------------------//
 // Verlet integrator
 
-VerletScheme WCSPHVerlet(&WCSPHfluid, initTimeStep);
+
+VerletScheme WCSPHVerlet(&WCSPHfluid, 0.0001);
 
 
 for(int step = 0; step < stepEnd + 1; step++)
 {
 
   std::cout << "STEP: " << step << std::endl;
-  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
+  //WCSPH.ApplyPeriodicBoundaryCondition(WCSPHfluid, WCSPHbound, 0. + (WCSPHconstants.h*1.05), 0.8 - (WCSPHconstants.h*1.05), 0., 0.8, step);
+  WCSPHperiodic.ApplyPeriodicBoundaryCondition(WCSPHfluid,
+                                               WCSPHbound,
+                                               0. + (WCSPHconstants.h*2.01),
+                                               0.8 - (WCSPHconstants.h*2.01),
+                                               0.+ WCSPHconstants.dp,
+                                               0.8 - WCSPHconstants.dp);
+
+  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, WCSPHperiodic);
 
   if(step % 20 == 0){
   WCSPHVerlet.ComputeStepEulerForStability();
@@ -165,7 +158,6 @@ for(int step = 0; step < stepEnd + 1; step++)
   }
 
   //Custom measuretools
-  //MeasureTotalKineticEnergyOfSystem(WCSPHfluid, WCSPHconstants, step*0.0001, (caseResults + "/OUTPUT/TotalKineticEnergy.dat"));
   WCSPHEkinTot.ComputeKineticEnergy(WCSPHfluid, WCSPHconstants);
 
 }
