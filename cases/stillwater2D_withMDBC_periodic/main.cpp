@@ -123,10 +123,51 @@ int main(){
   WCSPH.UpdateBoundary(WCSPHfluid, WCSPHbound, WCSPHconstants);
 
 //-----------------------------------------------------------------------------------//
+// Symplectic integrator
+
+SymplecticScheme WCSPHSymplecticFluid(&WCSPHfluid, initTimeStep);
+
+for(int step = 0; step < stepEnd + 1; step++)
+{
+
+  std::cout << "STEP: " << step << std::endl;
+  WCSPHperiodic.ApplyPeriodicBoundaryCondition(WCSPHfluid,
+                                               WCSPHbound,
+                                               0. + (WCSPHconstants.h*2.01),
+                                               0.8 - (WCSPHconstants.h*2.01),
+                                               0.+ WCSPHconstants.dp,
+                                               0.8 - WCSPHconstants.dp);
+
+
+
+  WCSPHSymplecticFluid.ComputePredictor();
+
+  //WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, false);
+  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, WCSPHperiodic);
+
+  WCSPHSymplecticFluid.ComputeCorrector();
+  //WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, true);
+  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, WCSPHperiodic);
+
+  if(step % saveOutput == 0)
+  {
+    writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/FLUID/fluid", step));
+    writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/BOUND/bound", step));
+    WCSPHmeasurement.Interpolate(WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound, WCSPHconstants);
+    writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/INTERPOLATION/interpolation", step));
+  }
+
+  WCSPHEkinTot.ComputeKineticEnergy(WCSPHfluid, WCSPHconstants);
+  WCSPHtrackParticles.TrackParticles(WCSPHfluid);
+
+}
+
+
+//-----------------------------------------------------------------------------------//
 // Verlet integrator
 
-
-VerletScheme WCSPHVerlet(&WCSPHfluid, 0.0001);
+/*
+VerletScheme WCSPHVerlet(&WCSPHfluid, initTimeStep);
 
 
 for(int step = 0; step < stepEnd + 1; step++)
@@ -163,12 +204,13 @@ for(int step = 0; step < stepEnd + 1; step++)
   WCSPHtrackParticles.TrackParticles(WCSPHfluid);
 
 }
+*/
 
 
 //-----------------------------------------------------------------------------------//
 
   WCSPHEkinTot.WriteTotalKinetcEnergyToFile(caseResults + "/OUTPUT/TotalKineticEnergy.dat");
-  WCSPHEkinTot.WriteParticleTrajectoryToFile(caseResults + "/OUTPUT/ParticleTrajectory"); //no .dat here!
+  WCSPHtrackParticles.WriteParticleTrajectoryToFile(caseResults + "/OUTPUT/ParticleTrajectory"); //no .dat here!
   WCSPHtrackParticles.WriteParticleVelocityToFile(caseResults + "/OUTPUT/ParticleVelocity"); //no .dat here!
 
 

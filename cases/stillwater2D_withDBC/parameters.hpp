@@ -12,8 +12,8 @@
 //-----------------------------------------------------------------------------------//
 
  unsigned int saveOutput = 10000; //steps
- std::string caseFolder = "/home/tomas/Documents/testovaci/cpp/TINYSPH_lib/cases/stillwater2D_withMDBC";
- std::string caseResults = "/home/tomas/Documents/temp/tinySPH_dev/stillwater2D_withMDBC";
+ std::string caseFolder = "/home/tomas/Documents/testovaci/cpp/TINYSPH_lib/cases/stillwater2D_withDBC";
+ std::string caseResults = "/home/tomas/Documents/temp/tinySPH_dev/stillwater2D_withDBC";
 
 //-----------------------------------------------------------------------------------//
 

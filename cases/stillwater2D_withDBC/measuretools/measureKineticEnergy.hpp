@@ -15,7 +15,7 @@ void MeasureTotalKineticEnergyOfSystem(Variables<double, double> &V,
 
   for(unsigned int i = 0; i < V.N; i++)
   {
-    EkinTot += 0.5*dot(V.v[i], V.v[i])*m;
+    EkinTot += 0.5*dot(V.v[i], V.v[i]);
   }
 
   std::ofstream fileWL;

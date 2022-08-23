@@ -4,9 +4,9 @@
 //
 //-----------------------------------------------------------------------------------//
 
- double endTime = 20.01; //seconds
+ double endTime = 4.01; //seconds
  //double endTime = 0.0001; //seconds
- double initTimeStep = 0.0001; //seconds
+ double initTimeStep = 0.0002; //seconds
  unsigned int stepEnd = ceil(endTime/initTimeStep);
 
 //-----------------------------------------------------------------------------------//

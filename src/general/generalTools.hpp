@@ -14,7 +14,8 @@
 //-----------------------------------------------------------------------------------//
 
 #define POS(x,y,X,Y) (x*Y + y)
-
+#define MAX( a , b) (((a)>(b))?(a):(b))
+#define MIN( a , b) (((a)<(b))?(a):(b))
 
 std::string coutVector2(Vector3<double> X)
 {

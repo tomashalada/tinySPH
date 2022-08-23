@@ -85,6 +85,12 @@ if(BUILD_DAMBREAK2D_MDBC)
 endif(BUILD_DAMBREAK2D_MDBC)
 
 # Stillwater
+option(BUILD_STILLWATER2D_DBC "Build example of how to use this library."
+		ON)
+if(BUILD_STILLWATER2D_DBC)
+    add_subdirectory(cases/stillwater2D_withDBC stillwater2D_withDBC)
+endif(BUILD_STILLWATER2D_DBC)
+
 option(BUILD_STILLWATER2D_MDBC "Build example of how to use this library."
 		ON)
 if(BUILD_STILLWATER2D_MDBC)

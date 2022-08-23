@@ -26,7 +26,7 @@
 //-----------------------------------------------------------------------------------//
 
 #include "variables.hpp"                // variables of used model
-#include "interactionHandlerMDBC.hpp"   // interaction manager
+#include "interactionHandler.hpp"       // interaction manager
 #include "integration.hpp"              // integrators (connected to the model)
 
 //-----------------------------------------------------------------------------------//
@@ -75,8 +75,7 @@ int main(){
   InteractionHandler<
   WCSPH_FLUIDFLUID,                     // fluid-fluid interaction model
   WCSPH_FLUIDBOUND_DBC,                 // fluid-wall interaction model
-  WCSPH_MDBC,                           // wall particle update model
-  //WCSPH_MDBCvelocity,                 // wall particle update model
+  WCSPH_DBC,                            // wall particle update model
   //DT_Molteni,                         // diffusive term
   DT_Fourtakas,                         // diffusive term
   VISCOSITY_Artificial,                 // viscosity term
@@ -104,23 +103,31 @@ int main(){
 //-----------------------------------------------------------------------------------//
 
   PressureToDensity(WCSPHfluid, WCSPHconstants);
-  WCSPH.UpdateBoundary(WCSPHfluid, WCSPHbound, WCSPHconstants);
+  //WCSPH.UpdateBoundary(WCSPHfluid, WCSPHbound, WCSPHconstants);
 
 //-----------------------------------------------------------------------------------//
 // Symplectic integrator
 
 SymplecticScheme WCSPHSymplecticFluid(&WCSPHfluid, initTimeStep);
+SymplecticScheme WCSPHSymplecticBound(&WCSPHbound, initTimeStep);
 
 for(int step = 0; step < stepEnd + 1; step++)
 {
 
   std::cout << "STEP: " << step << std::endl;
+  DensityToPressure(WCSPHfluid, WCSPHconstants);
+  DensityToPressure(WCSPHbound, WCSPHconstants);
 
   WCSPHSymplecticFluid.ComputePredictor();
-  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, false);
+  WCSPHSymplecticBound.ComputePredictor();
+  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
+
+  DensityToPressure(WCSPHfluid, WCSPHconstants);
+  DensityToPressure(WCSPHbound, WCSPHconstants);
 
   WCSPHSymplecticFluid.ComputeCorrector();
-  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, true);
+  WCSPHSymplecticBound.ComputeCorrector();
+  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
 
   if(step % saveOutput == 0)
   {

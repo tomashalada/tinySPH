@@ -34,7 +34,8 @@ public:
 
   void Interact(Variables<double, double> &WCSPHfluid,
                 BoundVars<double, double> &WCSPHbound,
-                ConstantVariables WCSPHconstants);
+                ConstantVariables WCSPHconstants,
+                bool updateBoundary);
 
   void UpdateBoundary(Variables<double, double> &WCSPHfluid,
                       BoundVars<double, double> &WCSPHbound,
@@ -111,7 +112,8 @@ DIFFUSIVE_TERM,
 VISOUCS_TERM,
 KERNEL>::Interact(Variables<double, double> &WCSPHfluid,
                   BoundVars<double, double> &WCSPHbound,
-                  ConstantVariables WCSPHconstants)
+                  ConstantVariables WCSPHconstants,
+                  bool updateBoundary)
 {
 
   //Compute pressure from density
@@ -150,24 +152,27 @@ KERNEL>::Interact(Variables<double, double> &WCSPHfluid,
   }
 
   // Update boundary particles
-  CompactNSearch::PointSet const& ps_2 = nsearch.point_set(positions_id_ghostNodes);
-  #pragma omp parallel for schedule(static)
-  for (int i = 0; i < ps_2.n_points(); ++i)
+  if(updateBoundary)
   {
-
-    InteractionDataGhostNode<double, double> ptcI;
-    InteractionData<double, double> ptcJ;
-    ptcI.CopyBoundaryDataIn(WCSPHbound, i);
-
-    for (size_t j = 0; j < ps_2.n_neighbors(positions_id, i); ++j)
+    CompactNSearch::PointSet const& ps_2 = nsearch.point_set(positions_id_ghostNodes);
+    #pragma omp parallel for schedule(static)
+    for (int i = 0; i < ps_2.n_points(); ++i)
     {
-      // Return the point id of the jth neighbor of the ith particle in the point_set_1.
-      const unsigned int pid = ps_2.neighbor(positions_id, i, j);
-      ptcJ.CopyDataIn(WCSPHfluid, pid);
-      BOUND_UPDATE::template UpdateBoundaryData<double, double, KERNEL, DIFFUSIVE_TERM, VISOUCS_TERM>(ptcI, ptcJ, WCSPHconstants);
-    }
 
-    ptcI.CopyBoundaryDataOut(WCSPHbound, i);
+      InteractionDataGhostNode<double, double> ptcI;
+      InteractionData<double, double> ptcJ;
+      ptcI.CopyBoundaryDataIn(WCSPHbound, i);
+
+      for (size_t j = 0; j < ps_2.n_neighbors(positions_id, i); ++j)
+      {
+        // Return the point id of the jth neighbor of the ith particle in the point_set_1.
+        const unsigned int pid = ps_2.neighbor(positions_id, i, j);
+        ptcJ.CopyDataIn(WCSPHfluid, pid);
+        BOUND_UPDATE::template UpdateBoundaryData<double, double, KERNEL, DIFFUSIVE_TERM, VISOUCS_TERM>(ptcI, ptcJ, WCSPHconstants);
+      }
+
+      ptcI.CopyBoundaryDataOut(WCSPHbound, i);
+    }
   }
 
 }

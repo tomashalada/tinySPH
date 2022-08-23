@@ -25,7 +25,7 @@ public:
   double c0;
   double eta;
   double rho0;
-  double eps;
+  double eps = 0.0001;
   double delta = 0.1;
   double cb;
   double dp;
