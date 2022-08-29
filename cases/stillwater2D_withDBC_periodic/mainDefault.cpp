@@ -26,8 +26,8 @@
 //-----------------------------------------------------------------------------------//
 
 #include "variables.hpp"                // variables of used model
-//#include "interactionHandlerMDBC.hpp" // interaction manager
-#include "interactionHandlerMDBC_withPeriodicBC.hpp"   // interaction manager with aux periodic BC
+//#include "interactionHandler.hpp"     // interaction manager
+#include "interactionHandler_withPeriodicBC.hpp"   // interaction manager with aux periodic BC
 #include "integration.hpp"              // integrators (connected to the model)
 
 //-----------------------------------------------------------------------------------//
@@ -93,8 +93,7 @@ int main(){
   InteractionHandler<
   WCSPH_FLUIDFLUID,                     // fluid-fluid interaction model
   WCSPH_FLUIDBOUND_DBC,                 // fluid-wall interaction model
-  //WCSPH_MDBC,                         // wall particle update model
-  WCSPH_MDBCvelocity,                   // wall particle update model
+  WCSPH_DBC,                            // wall particle update model
   //DT_Molteni,                         // diffusive term
   DT_Fourtakas,                         // diffusive term
   VISCOSITY_Artificial,                 // viscosity term
@@ -120,12 +119,13 @@ int main(){
 //-----------------------------------------------------------------------------------//
 
   PressureToDensity(WCSPHfluid, WCSPHconstants);
-  WCSPH.UpdateBoundary(WCSPHfluid, WCSPHbound, WCSPHconstants);
+  //WCSPH.UpdateBoundary(WCSPHfluid, WCSPHbound, WCSPHconstants);
 
 //-----------------------------------------------------------------------------------//
 // Symplectic integrator
 
 SymplecticScheme WCSPHSymplecticFluid(&WCSPHfluid, initTimeStep);
+SymplecticScheme WCSPHSymplecticBound(&WCSPHbound, initTimeStep);
 
 for(int step = 0; step < stepEnd + 1; step++)
 {
@@ -141,11 +141,13 @@ for(int step = 0; step < stepEnd + 1; step++)
 
 
   WCSPHSymplecticFluid.ComputePredictor();
+  WCSPHSymplecticBound.ComputePredictor();
 
   //WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, false);
   WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, WCSPHperiodic);
 
   WCSPHSymplecticFluid.ComputeCorrector();
+  WCSPHSymplecticBound.ComputeCorrector();
   //WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, true);
   WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, WCSPHperiodic);
 
@@ -153,11 +155,6 @@ for(int step = 0; step < stepEnd + 1; step++)
   {
     writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/FLUID/fluid", step));
     writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/BOUND/bound", step));
-
-    //Compute delta_r
-    for(int i = 0; i < WCSPHfluid.N; i++)
-      WCSPHfluid.delta_r[i] = WCSPHfluid.r[i] - WCSPHfluid.r0[i];
-
     WCSPHmeasurement.Interpolate(WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound, WCSPHconstants);
     writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/INTERPOLATION/interpolation", step));
   }
@@ -217,7 +214,6 @@ for(int step = 0; step < stepEnd + 1; step++)
   WCSPHEkinTot.WriteTotalKinetcEnergyToFile(caseResults + "/TotalKineticEnergy.dat");
   WCSPHtrackParticles.WriteParticleTrajectoryToFile(caseResults + "/ParticleTrajectory"); //no .dat here!
   WCSPHtrackParticles.WriteParticleVelocityToFile(caseResults + "/ParticleVelocity"); //no .dat here!
-
 
   std::cout << "Done..." << std::endl;
 

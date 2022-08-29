@@ -1,9 +1,9 @@
 add_definitions(-D_USE_MATH_DEFINES)
 
 include_directories("../../libs/include")
-include_directories("../../src_stillWater")
-include_directories("../../src_stillWater/general")
-include_directories("../../src_stillWater/WCSPH_MDBC")
+include_directories("../../src")
+include_directories("../../src/general")
+include_directories("../../src/WCSPH_MDBC")
 include_directories("measuretools")
 
 add_executable(stillwater2D_mDBC

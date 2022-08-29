@@ -108,7 +108,7 @@ int main(){
 // Symplectic integrator
 
   SymplecticScheme WCSPHSymplecticFluid(&WCSPHfluid, initTimeStep);
-  //SymplecticScheme WCSPHSymplecticBound(&WCSPHbound, initTimeStep);
+  SymplecticScheme WCSPHSymplecticBound(&WCSPHbound, initTimeStep);
 
   for(int step = 0; step < stepEnd + 1; step++)
   {
@@ -118,25 +118,20 @@ int main(){
     DensityToPressure(WCSPHbound, WCSPHconstants);
 
     WCSPHSymplecticFluid.ComputePredictor();
-    //WCSPHSymplecticBound.ComputePredictor();
+    WCSPHSymplecticBound.ComputePredictor();
     WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
 
     DensityToPressure(WCSPHfluid, WCSPHconstants);
     DensityToPressure(WCSPHbound, WCSPHconstants);
 
     WCSPHSymplecticFluid.ComputeCorrector();
-    //WCSPHSymplecticBound.ComputeCorrector();
+    WCSPHSymplecticBound.ComputeCorrector();
     WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
 
     if(step % saveOutput == 0)
     {
       writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/FLUID/fluid", step));
       writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/BOUND/bound", step));
-
-      //Compute delta_r
-      for(int i = 0; i < WCSPHfluid.N; i++)
-        WCSPHfluid.delta_r[i] = WCSPHfluid.r[i] - WCSPHfluid.r0[i];
-
       WCSPHmeasurement.Interpolate(WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound, WCSPHconstants);
       writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/INTERPOLATION/interpolation", step));
     }

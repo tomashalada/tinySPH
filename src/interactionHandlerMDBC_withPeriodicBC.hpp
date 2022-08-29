@@ -136,7 +136,6 @@ KERNEL>::Interact(Variables<double, double> &WCSPHfluid,
   DensityToPressure(WCSPHbound, WCSPHconstants);
 
   nsearch.find_neighbors();
-  std::cout << "hit" << std::endl;
 
   // Update fluid particles
   CompactNSearch::PointSet const& ps_1 = nsearch.point_set(positions_id);

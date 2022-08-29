@@ -6,6 +6,7 @@
 #include <cmath>
 #include <limits>
 #include <chrono>
+#include <random>
 
 #include <omp.h>
 #include <algorithm>
@@ -14,7 +15,6 @@
 #include <string>
 #include <string_view>
 #include <cstdlib>
-
 
 //-----------------------------------------------------------------------------------//
 
@@ -73,9 +73,9 @@ int main(){
   std::cout << "Number of boundary particles: " << WCSPHbound.N << std::endl;
 
   InteractionHandler<
-  WCSPHBI_FLUIDFLUID,                     // fluid-fluid interaction model
-  WCSPHBI_FLUIDBOUND_BI,                  // fluid-wall interaction model
-  BOUNDARY_SIMPLE,                      // wall particle update model
+  WCSPH_FLUIDFLUID,                     // fluid-fluid interaction model
+  WCSPH_FLUIDBOUND_DBC,                 // fluid-wall interaction model
+  WCSPH_DBC,                            // wall particle update model
   //DT_Molteni,                         // diffusive term
   DT_Fourtakas,                         // diffusive term
   VISCOSITY_Artificial,                 // viscosity term
@@ -95,6 +95,7 @@ int main(){
   WendlandKernel
   > WCSPHmeasurement(WCSPHconstants.h*2, WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound);
 
+
   //Measure kineticEnergy
   MEASUREMENT_TotalKineticEnergyOfSystem WCSPHEkinTot(stepEnd, initTimeStep);
   MEASUREMENT_TrackParticleMovement WCSPHtrackParticles(stepEnd, initTimeStep);
@@ -107,44 +108,75 @@ int main(){
 //-----------------------------------------------------------------------------------//
 // Symplectic integrator
 
-  SymplecticScheme WCSPHSymplecticFluid(&WCSPHfluid, initTimeStep);
-  //SymplecticScheme WCSPHSymplecticBound(&WCSPHbound, initTimeStep);
+SymplecticScheme WCSPHSymplecticFluid(&WCSPHfluid, initTimeStep);
+SymplecticScheme WCSPHSymplecticBound(&WCSPHbound, initTimeStep);
 
-  for(int step = 0; step < stepEnd + 1; step++)
+for(int step = 0; step < stepEnd + 1; step++)
+{
+
+  std::cout << "STEP: " << step << std::endl;
+  DensityToPressure(WCSPHfluid, WCSPHconstants);
+  DensityToPressure(WCSPHbound, WCSPHconstants);
+
+  WCSPHSymplecticFluid.ComputePredictor();
+  WCSPHSymplecticBound.ComputePredictor();
+  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
+
+  DensityToPressure(WCSPHfluid, WCSPHconstants);
+  DensityToPressure(WCSPHbound, WCSPHconstants);
+
+  WCSPHSymplecticFluid.ComputeCorrector();
+  WCSPHSymplecticBound.ComputeCorrector();
+  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
+
+  if(step % saveOutput == 0)
   {
-
-    std::cout << "STEP: " << step << std::endl;
-    DensityToPressure(WCSPHfluid, WCSPHconstants);
-    DensityToPressure(WCSPHbound, WCSPHconstants);
-
-    WCSPHSymplecticFluid.ComputePredictor();
-    //WCSPHSymplecticBound.ComputePredictor();
-    WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
-
-    DensityToPressure(WCSPHfluid, WCSPHconstants);
-    DensityToPressure(WCSPHbound, WCSPHconstants);
-
-    WCSPHSymplecticFluid.ComputeCorrector();
-    //WCSPHSymplecticBound.ComputeCorrector();
-    WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
-
-    if(step % saveOutput == 0)
-    {
-      writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/FLUID/fluid", step));
-      writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/BOUND/bound", step));
-
-      //Compute delta_r
-      for(int i = 0; i < WCSPHfluid.N; i++)
-        WCSPHfluid.delta_r[i] = WCSPHfluid.r[i] - WCSPHfluid.r0[i];
-
-      WCSPHmeasurement.Interpolate(WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound, WCSPHconstants);
-      writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/INTERPOLATION/interpolation", step));
-    }
-
-    WCSPHEkinTot.ComputeKineticEnergy(WCSPHfluid, WCSPHconstants);
-    WCSPHtrackParticles.TrackParticles(WCSPHfluid, LT, LM, LB, MT, MM, MB, RT, RM, RB);
-
+    writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/FLUID/fluid", step));
+    writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/BOUND/bound", step));
+    WCSPHmeasurement.Interpolate(WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound, WCSPHconstants);
+    writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/INTERPOLATION/interpolation", step));
   }
+
+  WCSPHEkinTot.ComputeKineticEnergy(WCSPHfluid, WCSPHconstants);
+  WCSPHtrackParticles.TrackParticles(WCSPHfluid, LT, LM, LB, MT, MM, MB, RT, RM, RB);
+
+}
+
+//-----------------------------------------------------------------------------------//
+// Verlet integrator
+
+/*
+VerletScheme WCSPHVerlet(&WCSPHfluid, initTimeStep);
+
+for(int step = 0; step < stepEnd + 1; step++)
+{
+
+  std::cout << "STEP: " << step << std::endl;
+  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
+
+  if(step % 20 == 0){
+  WCSPHVerlet.ComputeStepEulerForStability();
+  }
+  else{
+  WCSPHVerlet.ComputeStep();
+  }
+
+  if(step % saveOutput == 0){
+    writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/FLUID/fluid", step));
+    writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/BOUND/bound", step));
+
+  WCSPHmeasurement.Interpolate(WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound, WCSPHconstants);
+  writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/INTERPOLATION/interpolation", step));
+  }
+
+  //Custom measuretools
+  //MeasureTotalKineticEnergyOfSystem(WCSPHfluid, WCSPHconstants, step*0.0001, (caseResults + "/OUTPUT/TotalKineticEnergy.dat"));
+  WCSPHEkinTot.ComputeKineticEnergy(WCSPHfluid, WCSPHconstants);
+  WCSPHtrackParticles.TrackParticles(WCSPHfluid);
+
+}
+*/
+
 
 //-----------------------------------------------------------------------------------//
 

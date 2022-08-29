@@ -153,11 +153,6 @@ for(int step = 0; step < stepEnd + 1; step++)
   {
     writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/FLUID/fluid", step));
     writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/BOUND/bound", step));
-
-    //Compute delta_r
-    for(int i = 0; i < WCSPHfluid.N; i++)
-      WCSPHfluid.delta_r[i] = WCSPHfluid.r[i] - WCSPHfluid.r0[i];
-
     WCSPHmeasurement.Interpolate(WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound, WCSPHconstants);
     writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/INTERPOLATION/interpolation", step));
   }
