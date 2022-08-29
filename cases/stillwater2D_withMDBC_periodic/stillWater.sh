@@ -12,26 +12,26 @@ CaseName="CASE_STILLWATER_2D"
 
 CaseFolder=$(pwd)
 
-#-------------------------------------------------------------------------------------#
-
-echo --- CASE_DAMBREAK_2D - TinySPH v0.0-7-2022 ---
-echo - Generate output folders, set parameters.
-
-### Prepare folders, copy data
-
-rm -r $SaveResults/OUTPUT
-
-mkdir $SaveResults/OUTPUT
-mkdir $SaveResults/OUTPUT/FLUID
-mkdir $SaveResults/OUTPUT/BOUND
-mkdir $SaveResults/OUTPUT/INTERPOLATION
-
-./../../tools/parseCaseResults.sh $CaseFolder parameters.hpp
-./../../tools/parseCasePath.sh $SaveResults parameters.hpp
-
-echo ... DONE.
-
-#-------------------------------------------------------------------------------------#
+#:#-------------------------------------------------------------------------------------#
+#:
+#:echo --- CASE_DAMBREAK_2D - TinySPH v0.0-7-2022 ---
+#:echo - Generate output folders, set parameters.
+#:
+#:### Prepare folders, copy data
+#:
+#:rm -r $SaveResults/OUTPUT
+#:
+#:mkdir $SaveResults/OUTPUT
+#:mkdir $SaveResults/OUTPUT/FLUID
+#:mkdir $SaveResults/OUTPUT/BOUND
+#:mkdir $SaveResults/OUTPUT/INTERPOLATION
+#:
+#:./../../tools/parseCaseResults.sh $CaseFolder parameters.hpp
+#:./../../tools/parseCasePath.sh $SaveResults parameters.hpp
+#:
+#:echo ... DONE.
+#:
+#:#-------------------------------------------------------------------------------------#
 set -e
 
 echo - Generate geometry and particles.
@@ -52,60 +52,60 @@ python ../../tools/PTCStoVTK.py -input="stillwater_interpolationPlane.ptcs" -out
 
 echo ... DONE.
 
-#-------------------------------------------------------------------------------------#
-
-echo - Run TinySPH $CASE_DAMBREAK_2D.
-
-### Run the case.
-
-cd ../../build/stillwater2D_withMDBC_periodic
-make
-time ./../../build/stillwater2D_withMDBC_periodic/stillwater2D_mDBC_periodic
-
-echo ... DONE.
-
-#-------------------------------------------------------------------------------------#
-
-echo - Postprocess .ptcs files.
-
-cd $CaseFolder
-
-#Fluid
-for f in $SaveResults/OUTPUT/FLUID/*
-do
-	echo $f
-	fileIn=${f%.*}
-	fileVTK=$fileIn.vtk
-	python ../../tools/PTCStoVTK.py -input="$f" -output="$fileVTK"
-done
-
-#Bound
-for f in $SaveResults/OUTPUT/BOUND/*
-do
-	echo $f
-	fileIn=${f%.*}
-	fileVTK=$fileIn.vtk
-	python ../../tools/PTCStoVTK.py -input="$f" -output="$fileVTK"
-done
-
-#Interpolation
-for f in $SaveResults/OUTPUT/INTERPOLATION/*
-do
-	echo $f
-	fileIn=${f%.*}
-	fileVTK=$fileIn.vtk
-	#python ../../tools/PTCStoVTKstructuredGrid.py -input="$f" -output="$fileVTK"
-	python ../../tools/structuredGridSimple.py -input="$f" -output="$fileVTK"
-done
-
-echo ... Fluid postprocessing DONE.
-
-#-------------------------------------------------------------------------------------#
-
-inputDataFile=$SaveResults/OUTPUT/TotalKineticEnergy.dat
-outputFileName=$SaveResults/OUTPUT/TotalKineticEnergy.png
-
-gnuplot -e "inputDataFile='$inputDataFile'" -e "outputFileName='$outputFileName'" tools/plotEnergyMixGeoCut.gp
-
-#-------------------------------------------------------------------------------------#
+#:#-------------------------------------------------------------------------------------#
+#:
+#:echo - Run TinySPH $CASE_DAMBREAK_2D.
+#:
+#:### Run the case.
+#:
+#:cd ../../build/stillwater2D_withMDBC_periodic
+#:make
+#:time ./../../build/stillwater2D_withMDBC_periodic/stillwater2D_mDBC_periodic
+#:
+#:echo ... DONE.
+#:
+#:#-------------------------------------------------------------------------------------#
+#:
+#:echo - Postprocess .ptcs files.
+#:
+#:cd $CaseFolder
+#:
+#:#Fluid
+#:for f in $SaveResults/OUTPUT/FLUID/*
+#:do
+#:	echo $f
+#:	fileIn=${f%.*}
+#:	fileVTK=$fileIn.vtk
+#:	python ../../tools/PTCStoVTK.py -input="$f" -output="$fileVTK"
+#:done
+#:
+#:#Bound
+#:for f in $SaveResults/OUTPUT/BOUND/*
+#:do
+#:	echo $f
+#:	fileIn=${f%.*}
+#:	fileVTK=$fileIn.vtk
+#:	python ../../tools/PTCStoVTK.py -input="$f" -output="$fileVTK"
+#:done
+#:
+#:#Interpolation
+#:for f in $SaveResults/OUTPUT/INTERPOLATION/*
+#:do
+#:	echo $f
+#:	fileIn=${f%.*}
+#:	fileVTK=$fileIn.vtk
+#:	#python ../../tools/PTCStoVTKstructuredGrid.py -input="$f" -output="$fileVTK"
+#:	python ../../tools/structuredGridSimple.py -input="$f" -output="$fileVTK"
+#:done
+#:
+#:echo ... Fluid postprocessing DONE.
+#:
+#:#-------------------------------------------------------------------------------------#
+#:
+#:inputDataFile=$SaveResults/OUTPUT/TotalKineticEnergy.dat
+#:outputFileName=$SaveResults/OUTPUT/TotalKineticEnergy.png
+#:
+#:gnuplot -e "inputDataFile='$inputDataFile'" -e "outputFileName='$outputFileName'" tools/plotEnergyMixGeoCut.gp
+#:
+#:#-------------------------------------------------------------------------------------#
 

@@ -54,12 +54,12 @@ int main(){
 
   //Set the case
   ConstantVariables WCSPHconstants(
-  0.04, //h
-  0.4, //m
-  42.48, //cs
-  0.01, //eta
-  1000., //rho0
-  0.02 //dp
+  smoothingLength, //h
+  particleMass, //m
+  numericalSpeedOfSound, //cs
+  viscosityCoef, //eta
+  initialDensity, //rho0
+  initialParticleDistance //dp
   );
 
   //Read fluid data
@@ -131,14 +131,14 @@ for(int step = 0; step < stepEnd + 1; step++)
 
   if(step % saveOutput == 0)
   {
-    writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/FLUID/fluid", step));
-    writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/BOUND/bound", step));
+    writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/FLUID/fluid", step));
+    writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/BOUND/bound", step));
     WCSPHmeasurement.Interpolate(WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound, WCSPHconstants);
-    writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/INTERPOLATION/interpolation", step));
+    writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/INTERPOLATION/interpolation", step));
   }
 
   WCSPHEkinTot.ComputeKineticEnergy(WCSPHfluid, WCSPHconstants);
-  WCSPHtrackParticles.TrackParticles(WCSPHfluid);
+  WCSPHtrackParticles.TrackParticles(WCSPHfluid, LT, LM, LB, MT, MM, MB, RT, RM, RB);
 
 }
 
@@ -180,9 +180,9 @@ for(int step = 0; step < stepEnd + 1; step++)
 
 //-----------------------------------------------------------------------------------//
 
-  WCSPHEkinTot.WriteTotalKinetcEnergyToFile(caseResults + "/OUTPUT/TotalKineticEnergy.dat");
-  WCSPHtrackParticles.WriteParticleTrajectoryToFile(caseResults + "/OUTPUT/ParticleTrajectory"); //no .dat here!
-  WCSPHtrackParticles.WriteParticleVelocityToFile(caseResults + "/OUTPUT/ParticleVelocity"); //no .dat here!
+  WCSPHEkinTot.WriteTotalKinetcEnergyToFile(caseResults + "/TotalKineticEnergy.dat");
+  WCSPHtrackParticles.WriteParticleTrajectoryToFile(caseResults + "/ParticleTrajectory"); //no .dat here!
+  WCSPHtrackParticles.WriteParticleVelocityToFile(caseResults + "/ParticleVelocity"); //no .dat here!
   std::cout << "Done..." << std::endl;
 
   return EXIT_SUCCESS;

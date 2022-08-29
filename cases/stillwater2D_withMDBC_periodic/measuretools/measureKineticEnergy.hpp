@@ -15,7 +15,7 @@ void MeasureTotalKineticEnergyOfSystem(Variables<double, double> &V,
 
   for(unsigned int i = 0; i < V.N; i++)
   {
-    EkinTot += 0.5*dot(V.v[i], V.v[i])*m;
+    EkinTot += 0.5*dot(V.v[i], V.v[i]);
   }
 
   std::ofstream fileWL;
@@ -34,6 +34,9 @@ public:
 
   double dt;
   std::vector<double> EkinTot;
+
+  std::vector<Vector3d> r_init;
+  std::vector<Vector3d> delta_r;
 
   //constructor
   MEASUREMENT_TotalKineticEnergyOfSystem(long int TotalSteps,
@@ -56,6 +59,7 @@ public:
     for(unsigned int i = 0; i < V.N; i++)
     {
       EkinTot_local += 0.5*dot(V.v[i], V.v[i])*m;
+      //EkinTot_local += 0.5*dot(V.v[i], V.v[i]);
     }
     EkinTot.push_back(EkinTot_local);
   }
@@ -99,19 +103,22 @@ class MEASUREMENT_TrackParticleMovement
   //destructor
   ~MEASUREMENT_TrackParticleMovement(){};
 
-  void TrackParticles(Variables<double, double> &V)
+  void TrackParticles(Variables<double, double> &V,
+                      int LT, int LM, int LB,
+                      int MT, int MM, int MB,
+                      int RT, int RM, int RB)
   {
-    r_LT.push_back(V.r[24]); v_LT.push_back(V.v[24]);
-    r_LM.push_back(V.r[23]); v_LM.push_back(V.v[23]);
-    r_LB.push_back(V.r[22]); v_LB.push_back(V.v[22]);
+    r_LT.push_back(V.r[LT]); v_LT.push_back(V.v[LT]);
+    r_LM.push_back(V.r[LM]); v_LM.push_back(V.v[LM]);
+    r_LB.push_back(V.r[LB]); v_LB.push_back(V.v[LB]);
 
-    r_MT.push_back(V.r[49]); v_MT.push_back(V.v[49]);
-    r_MM.push_back(V.r[48]); v_MM.push_back(V.v[48]);
-    r_MB.push_back(V.r[47]); v_MB.push_back(V.v[47]);
+    r_MT.push_back(V.r[MT]); v_MT.push_back(V.v[MT]);
+    r_MM.push_back(V.r[MM]); v_MM.push_back(V.v[MM]);
+    r_MB.push_back(V.r[MB]); v_MB.push_back(V.v[MB]);
 
-    r_RT.push_back(V.r[74]); v_RT.push_back(V.v[74]);
-    r_RM.push_back(V.r[73]); v_RM.push_back(V.v[73]);
-    r_RB.push_back(V.r[72]); v_RB.push_back(V.v[72]);
+    r_RT.push_back(V.r[RT]); v_RT.push_back(V.v[RT]);
+    r_RM.push_back(V.r[RM]); v_RM.push_back(V.v[RM]);
+    r_RB.push_back(V.r[RB]); v_RB.push_back(V.v[RB]);
   }
 
   void WriteParticleTrajectoryToFile(std::string fileName)

@@ -54,16 +54,6 @@ public:
 
   ~InteractionHandler(){};
 
-  //temporary periodic BC
-  /*
-  unsigned int leftOverlap_FluidN = 0;
-  std::vector<Vector3d> leftOverlap_r;
-  std::vector<unsigned int> leftOverlap_idx;
-  unsigned int rightOverlap_FluidN = 0;
-  std::vector<Vector3d> rightOverlap_r;
-  std::vector<unsigned int> rightOverlap_idx;
-  */
-
 private:
   CompactNSearch::NeighborhoodSearch nsearch;
   unsigned int positions_id;

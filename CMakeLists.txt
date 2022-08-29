@@ -66,11 +66,11 @@ if(BUILD_DAMBREAK2D_DBC)
 	add_subdirectory(cases/dambreak2D_withDBC dambreak2D_withDBC)
 endif(BUILD_DAMBREAK2D_DBC)
 
-option(BUILD_DAMBREAK2D_DBCsimple "Build example of how to use this library."
+option(BUILD_DAMBREAK2D_GWBC "Build example of how to use this library."
 		ON)
-if(BUILD_DAMBREAK2D_DBCsimple)
-	add_subdirectory(cases/dambreak2D_withDBCsimple dambreak2D_withDBCsimple)
-endif(BUILD_DAMBREAK2D_DBCsimple)
+if(BUILD_DAMBREAK2D_GWBC)
+	add_subdirectory(cases/dambreak2D_withGWBC dambreak2D_withGWBC)
+endif(BUILD_DAMBREAK2D_GWBC)
 
 option(BUILD_DAMBREAK2D_BI "Build example of how to use this library."
 		ON)
@@ -85,11 +85,23 @@ if(BUILD_DAMBREAK2D_MDBC)
 endif(BUILD_DAMBREAK2D_MDBC)
 
 # Stillwater
+option(BUILD_STILLWATER2D_BI "Build example of how to use this library."
+		ON)
+if(BUILD_STILLWATER2D_BI)
+    add_subdirectory(cases/stillwater2D_withBI stillwater2D_withBI)
+endif(BUILD_STILLWATER2D_BI)
+
 option(BUILD_STILLWATER2D_DBC "Build example of how to use this library."
 		ON)
 if(BUILD_STILLWATER2D_DBC)
     add_subdirectory(cases/stillwater2D_withDBC stillwater2D_withDBC)
 endif(BUILD_STILLWATER2D_DBC)
+
+option(BUILD_STILLWATER2D_DBC_PERIODIC "Build example of how to use this library."
+		ON)
+if(BUILD_STILLWATER2D_DBC_PERIODIC)
+    add_subdirectory(cases/stillwater2D_withDBC_periodic stillwater2D_withDBC_periodic)
+endif(BUILD_STILLWATER2D_DBC_PERIODIC)
 
 option(BUILD_STILLWATER2D_MDBC "Build example of how to use this library."
 		ON)

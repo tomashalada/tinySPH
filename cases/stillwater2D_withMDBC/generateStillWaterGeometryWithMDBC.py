@@ -7,15 +7,15 @@
 #-------------------------------------------------------------------------------------#
 # Parameters of initial state
 
-dp = 0.02                                   #initial particle distance
+dp = 0.01                                   #initial particle distanc
 
-boxL = 0.8+dp                               #length of box
-boxH = 0.6                                  #height of box
+boxL = 1.0+dp                               #length of box
+boxH = 0.5+dp                               #height of box
 
-fluidL = 0.8-dp                             #length of fluid block
+fluidL = 1.0-dp                             #length of fluid block
 fluidH = 0.5                                #height of fluid block
 
-n_layers = 3                                #number of boundary layers
+n_layers = 4                                #number of boundary layers
 
 rho0 = 1000.                                #initial (referential) density
 p0 = 0.                                     #initial pressure (recomputed)
@@ -116,24 +116,24 @@ generate90degCorner(x_last, 0., +1, -1)
 with open("stillwater_fluid.ptcs", "w") as f:
   f.write(str(len(fluid_rx)) + "\n")
   for i in range(len(fluid_rx)):
-    f.write(str(fluid_rx[i]) + " " + str(fluid_ry[i]) + " " + str(fluid_rz[i]) + " " + \
+    f.write(str(round(fluid_rx[i], 5)) + " " + str(round(fluid_ry[i], 5)) + " " + str(round(fluid_rz[i], 5)) + " " + \
             str(0.) + " " + str(0.) + " " + str(0.) + " " + \
-            str(rho0) + " " + str(fluid_p[i]) + "\n")
+            str(rho0) + " " + str(round(fluid_p[i], 5)) + "\n")
 
 # Write boundary particles
 with open("stillwater_wall.ptcs", "w") as f:
   f.write(str(len(box_rx)) + "\n")
   for i in range(len(box_rx)):
-    f.write(str(box_rx[i]) + " " + str(box_ry[i]) + " " + str(box_rz[i]) + " " + \
+    f.write(str(round(box_rx[i], 5)) + " " + str(round(box_ry[i], 5)) + " " + str(round(box_rz[i], 5)) + " " + \
             str(0.) + " " + str(0.) + " " + str(0.) + " " + \
             str(rho0) + " " + str(p0) + " " + \
-            str(ghost_rx[i]) + " " + str(ghost_ry[i]) + " " + str(ghost_rz[i]) + "\n")
+            str(round(ghost_rx[i], 5)) + " " + str(round(ghost_ry[i], 5)) + " " + str(round(ghost_rz[i], 5)) + "\n")
 
 # Write ghost node
 with open("stillwater_ghostNodes.ptcs", "w") as f:
   f.write(str(len(ghost_rx)) + "\n")
   for i in range(len(ghost_rx)):
-    f.write(str(ghost_rx[i]) + " " + str(ghost_ry[i]) + " " + str(ghost_rz[i]) + " " + \
+    f.write(str(round(ghost_rx[i], 5)) + " " + str(round(ghost_ry[i], 5)) + " " + str(round(ghost_rz[i], 5)) + " " + \
             str(0.) + " " + str(0.) + " " + str(0.) + " " + \
             str(rho0) + " " + str(p0) + "\n")
 
@@ -158,7 +158,7 @@ for x in range(interpolationL_n-1):
 with open("stillwater_interpolationPlane.ptcs", "w") as f:
   f.write(str(len(IN_rx)) + "\n")
   for i in range(len(IN_rx)):
-    f.write(str(IN_rx[i]) + " " + str(IN_ry[i]) + " " + str(IN_rz[i]) + " " + \
+    f.write(str(round(IN_rx[i], 5)) + " " + str(round(IN_ry[i], 5)) + " " + str(round(IN_rz[i], 5)) + " " + \
             str(0.) + " " + str(0.) + " " + str(0.) + " " + \
             str(0.) + " " + str(0.) + "\n")
 

@@ -219,6 +219,42 @@ static void UpdateBoundaryData(InteractionData<T, S> &I,
 
 //-----------------------------------------------------------------------------------//
 
+struct WCSPH_GWBC{
+
+template<
+typename T,
+typename S,
+typename KERNEL,
+typename DIFF_TERM,
+typename VISCO_TERM
+>
+static void UpdateBoundaryData(InteractionData<T, S> &I,
+                               InteractionData<T, S> &J,
+                               ConstantVariables &C)
+{
+
+  double h = C.h; double m = C.m; double rho0 = C.rho0;
+  double c0 = C.c0; double eta = C.eta; double eps = 0.001;
+  double delta = C.delta;
+
+  Vector3<double> g = {0., 0., -9.81};
+
+  //Resolv kernel function values:
+  Vector3<double> dr = I.r - J.r;
+  double drs = dr.length();
+
+  double W = KERNEL::W(drs, h);
+
+  I.drho += J.p*W + J.rho*dot(g, dr)*W;
+  I.a = {0., 0., 0.}; //zmiznout
+
+  I.gamma += W;
+}
+
+};
+
+//-----------------------------------------------------------------------------------//
+
 struct BOUNDARY_SIMPLE{
 
 template<

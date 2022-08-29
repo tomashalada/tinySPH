@@ -45,7 +45,7 @@ python ../../tools/PTCStoVTK.py -input="stillwater_fluid.ptcs" -output="stillwat
 #Bound
 python ../../tools/PTCStoVTK.py -input="stillwater_wall.ptcs" -output="stillwater_wall.vtk"
 #Ghost
-python ../../tools/PTCStoVTK.py -input="stillwater_ghostNodes.ptcs" -output="stillwater_ghostNodes.vtk"
+#python ../../tools/PTCStoVTK.py -input="stillwater_ghostNodes.ptcs" -output="stillwater_ghostNodes.vtk"
 #Interpolation nodes
 python ../../tools/PTCStoVTK.py -input="stillwater_interpolationPlane.ptcs" -output="stillwater_interpolationPlane.vtk"
 
