@@ -4,14 +4,14 @@
 //
 //-----------------------------------------------------------------------------------//
 
- double endTime = 0.01; //seconds
+ double endTime = 60.01; //seconds
  //double endTime = 0.0001; //seconds
  double initTimeStep = 0.0002; //seconds
  unsigned int stepEnd = ceil(endTime/initTimeStep);
 
 //-----------------------------------------------------------------------------------//
 
- unsigned int saveOutput = 10000; //steps
+ unsigned int saveOutput = 15000; //steps
  std::string caseFolder = "/home/tomas/Documents/testovaci/cpp/TINYSPH_lib/cases/stillwater2D_withMDBC";
  std::string caseResults = "/home/tomas/Documents/temp/tinySPH_glob/MDBC";
 
