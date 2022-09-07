@@ -73,8 +73,8 @@ int main(){
   std::cout << "Number of boundary particles: " << WCSPHbound.N << std::endl;
 
   InteractionHandler<
-  WCSPHBI_FLUIDFLUID,                     // fluid-fluid interaction model
-  WCSPHBI_FLUIDBOUND_BI,                  // fluid-wall interaction model
+  WCSPHBI_FLUIDFLUID,                   // fluid-fluid interaction model
+  WCSPHBI_FLUIDBOUND_BI,                // fluid-wall interaction model
   BOUNDARY_SIMPLE,                      // wall particle update model
   //DT_Molteni,                         // diffusive term
   DT_Fourtakas,                         // diffusive term
@@ -102,7 +102,7 @@ int main(){
 //-----------------------------------------------------------------------------------//
 
   PressureToDensity(WCSPHfluid, WCSPHconstants);
-  //WCSPH.UpdateBoundary(WCSPHfluid, WCSPHbound, WCSPHconstants);
+  WCSPH.UpdateBoundary(WCSPHfluid, WCSPHbound, WCSPHconstants);
 
 //-----------------------------------------------------------------------------------//
 // Symplectic integrator
@@ -114,19 +114,12 @@ int main(){
   {
 
     std::cout << "STEP: " << step << std::endl;
-    DensityToPressure(WCSPHfluid, WCSPHconstants);
-    DensityToPressure(WCSPHbound, WCSPHconstants);
 
     WCSPHSymplecticFluid.ComputePredictor();
-    //WCSPHSymplecticBound.ComputePredictor();
-    WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
-
-    DensityToPressure(WCSPHfluid, WCSPHconstants);
-    DensityToPressure(WCSPHbound, WCSPHconstants);
+    WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, false);
 
     WCSPHSymplecticFluid.ComputeCorrector();
-    //WCSPHSymplecticBound.ComputeCorrector();
-    WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
+    WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, true);
 
     if(step % saveOutput == 0)
     {

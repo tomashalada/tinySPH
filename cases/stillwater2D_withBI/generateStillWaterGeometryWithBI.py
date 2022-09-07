@@ -9,10 +9,10 @@
 
 dp = 0.02                                   #initial particle distance
 
-boxL = 1.0+dp                               #length of box
+boxL = 0.8+dp                               #length of box
 boxH = 0.6                                  #height of box
 
-fluidL = 1.0-dp                             #length of fluid block
+fluidL = 0.8-dp                             #length of fluid block
 fluidH = 0.5                                #height of fluid block
 
 n_layers = 1                                #number of boundary layers

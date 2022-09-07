@@ -50,12 +50,12 @@ int main(){
 
   //Set the case
   ConstantVariables WCSPHconstants(
-  0.0070711*1.3, //h
-  0.025, //m
-  34.3, //cs
-  0.02, //eta
-  1000., //rho0
-  0.005 //dp
+  smoothingLength, //h
+  particleMass, //m
+  numericalSpeedOfSound, //cs
+  viscosityCoef, //eta
+  initialDensity, //rho0
+  initialParticleDistance //dp
   );
 
   //Read fluid data
@@ -128,22 +128,21 @@ for(int step = 0; step < stepEnd + 1; step++)
 {
 
   std::cout << "STEP: " << step << std::endl;
-
-  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
+  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, true);
 
   if(step % 20 == 0){
-  WCSPHVerlet.ComputeStepEulerForStability();
+    WCSPHVerlet.ComputeStepEulerForStability();
   }
   else{
-  WCSPHVerlet.ComputeStep();
+    WCSPHVerlet.ComputeStep();
   }
 
   if(step % saveOutput == 0){
-  writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/FLUID/fluid", step));
-  writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/BOUND/bound", step));
+    writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/FLUID/fluid", step));
+    writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/BOUND/bound", step));
 
-  WCSPHmeasurement.Interpolate(WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound, WCSPHconstants);
-  writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/INTERPOLATION/interpolation", step));
+    WCSPHmeasurement.Interpolate(WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound, WCSPHconstants);
+    writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/INTERPOLATION/interpolation", step));
   }
 
 }

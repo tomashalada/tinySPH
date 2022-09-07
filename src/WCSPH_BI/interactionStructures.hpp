@@ -76,8 +76,17 @@ template<typename T, typename S>
 void InteractionData<T, S>::CopyDataOut(Variables<T, S> &vars, unsigned int i)
 {
 
-  vars.drho[i] = drho/gamma;
-  vars.a[i] = a/gamma;
+  //vars.drho[i] = drho/gamma;
+  //vars.a[i] = a/gamma;
+
+  if(gamma > 0.01){
+    vars.drho[i] = drho/gamma;
+    vars.a[i] = a/gamma;
+  }
+  else{
+    vars.drho[i] = 0.;
+    vars.a[i] = {0., 0., 0.};
+  }
 
 }
 
@@ -88,6 +97,7 @@ void InteractionData<T, S>::CopyBoundaryDataOut(Variables<T, S> &vars, unsigned 
 {
 
   if(gamma > 0.0001){
+  //if(gamma > 0.){
     vars.rho[i] = (drho/gamma > 1000) ? (drho/gamma) : (1000.);
   }
   else

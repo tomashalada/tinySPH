@@ -62,6 +62,8 @@ public:
       //EkinTot_local += 0.5*dot(V.v[i], V.v[i]);
     }
     EkinTot.push_back(EkinTot_local);
+    //printf("EkinTot_local = %d \n", EkinTot_local);
+    std::cout << "Ekin tot: " << EkinTot_local << std::endl;
   }
 
   //Write EkinTot to file
