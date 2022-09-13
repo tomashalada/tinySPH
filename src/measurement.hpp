@@ -21,34 +21,46 @@ class MEASUREMENT
 //-----------------------------------------------------------------------------------//
 
 template< typename VARIABLES = Variables< double, double > >
-class MEASUREMENT_pressure: public MEASUREMENT
+class MEASUREMENT_WCSPH: public MEASUREMENT
 {
 public:
 
+  unsigned int numberOfSensors;
   float dt;
-  std::vector< float > p1, p2, p3, p4;
-  std::vector< Vector3d > positions;
 
-  // This si way to go.
-  //  std::vector< float > storage_p;
-  //  std::vector< float > storage_rho;
-  //  std::vector< Vector3d > storage_v;
+  std::vector< std::vector< float > > storage_p;
+  std::vector< std::vector< float > > storage_rho;
+  std::vector< std::vector< Vector3d > > storage_v;
 
   VARIABLES sensors;
 
-  MEASUREMENT_pressure( std::vector< Vector3d > _positions, float _dt)
-  : positions( _positions ), dt( _dt )
+  MEASUREMENT_WCSPH( unsigned int _numerOfSensors, float _dt)
+  : numberOfSensors( _numerOfSensors ), dt( _dt )
   {
+
+    this-> storage_p.resize(_numerOfSensors);
+    this-> storage_rho.resize(_numerOfSensors);
+    this-> storage_v.resize(_numerOfSensors);
 
   }
-  ~MEASUREMENT_pressure(  ){  };
+  ~MEASUREMENT_WCSPH(  ){  };
 
-  void StoreSensorsData( )
+  void StoreSensorsData( bool save_pressure = true,
+                         bool save_density = true,
+                         bool save_velocity = true)
   {
-    p1.push_back(sensors.p[0]);
-    p2.push_back(sensors.p[1]);
-    p3.push_back(sensors.p[2]);
-    p4.push_back(sensors.p[3]);
+
+    for(int i = 0; i < numberOfSensors; i++)
+    {
+      if(save_pressure)
+        storage_p[i].push_back(sensors.p[i]);
+
+      //if(save_density)
+      //  storage_p[i].push_back(sensors.p[i]);
+
+      //if(save_velocity)
+      //  storage_p[i].push_back(sensors.p[i]);
+    }
   }
 
   void WritePressureToFile( std::string fileName )
@@ -56,13 +68,18 @@ public:
     std::ofstream file;
     file.open( fileName );
 
-    for( int i = 0; i < p1.size(); i++ )
-      //for( int j = 0; j < sensors.N; j++ )
-        file << dt*i << " " << p1[ i ] << " " << p2[ i ] << " " << p3[ i ] << " " << p4[ i ] << std::endl;
+    for( int i = 0; i < storage_p[0].size(); i++ )
+    {
+      file << dt*i;
+      for( int j = 0; j < sensors.N; j++ )
+      {
+        file << " " << storage_p[ j ][ i ];
+      }
+     file << "\n";
+    }
 
     file.close();
   }
-
 
 };
 

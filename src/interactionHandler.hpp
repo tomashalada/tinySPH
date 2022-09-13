@@ -50,13 +50,14 @@ public:
   typename VARIABLES = Variables< double, double>,
   typename INTERPOLATION
   >
-  void Measure(MEASUREMENT_pressure< VARIABLES > &WCSPHpressure,
+  void Measure(MEASUREMENT_WCSPH< VARIABLES > &WCSPHpressure,
                Variables<double, double> &WCSPHfluid,
                BoundVars<double, double> &WCSPHbound,
                ConstantVariables WCSPHconstants);
 
   template <typename VARIABLES = Variables< double, double> >
-  void AddSensors(MEASUREMENT_pressure< VARIABLES > &WCSPHpressure);
+  void AddSensors(MEASUREMENT_WCSPH< VARIABLES > &WCSPHmeasurement);
+ // void AddSensors(Variables<double, double> &WCSPHmeasurement);
 
   InteractionHandler(double h,
                      Variables<double, double> &WCSPHfluid,
@@ -120,11 +121,14 @@ FLUID_BOUND,
 BOUND_UPDATE,
 DIFFUSIVE_TERM,
 VISOUCS_TERM,
-KERNEL>::AddSensors(MEASUREMENT_pressure< VARIABLES > &WCSPHpressure)
+KERNEL>::AddSensors(MEASUREMENT_WCSPH< VARIABLES > &WCSPHmeasurement)
+//KERNEL>::AddSensors(Variables<double, double> &WCSPHmeasurement)
 {
 
-  positions_id_sensors = nsearch.add_point_set(&WCSPHpressure.positions.front().x,
-                                                WCSPHpressure.positions.size());
+  positions_id_sensors = nsearch.add_point_set(&WCSPHmeasurement.sensors.r.front().x,
+                                                WCSPHmeasurement.sensors.N);
+  //positions_id_sensors = nsearch.add_point_set(&WCSPHmeasurement.r.front().x,
+  //                                              WCSPHmeasurement.N);
 
   nsearch.set_active(positions_id, positions_id_sensors, false);
   nsearch.set_active(positions_id_wall, positions_id_sensors, false);
@@ -281,7 +285,7 @@ FLUID_BOUND,
 BOUND_UPDATE,
 DIFFUSIVE_TERM,
 VISOUCS_TERM,
-KERNEL>::Measure(MEASUREMENT_pressure< VARIABLES > &WCSPHpressure,
+KERNEL>::Measure(MEASUREMENT_WCSPH< VARIABLES > &WCSPHpressure,
                  Variables<double, double> &WCSPHfluid,
                  BoundVars<double, double> &WCSPHbound,
                  ConstantVariables WCSPHconstants)

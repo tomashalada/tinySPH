@@ -35,7 +35,7 @@ public:
                    ConstantVariables WCSPHconstants);
 
   template < typename VARIABLES = Variables< double, double> >
-  void Measure(MEASUREMENT_pressure< VARIABLES > &WCSPHpressure,
+  void Measure(MEASUREMENT_WCSPH< VARIABLES > &WCSPHpressure,
                Variables<double, double> &WCSPHfluid,
                Variables<double, double> &WCSPHwall,
                ConstantVariables WCSPHconstants);
@@ -43,7 +43,7 @@ public:
   void AddInterpolationPlane(Variables<double, double> &WCSPHinterplationNodes);
 
   template <typename VARIABLES = Variables< double, double> >
-  void AddMeasurementPositions(MEASUREMENT_pressure< VARIABLES > &WCSPHpressure);
+  void AddMeasurementPositions(MEASUREMENT_WCSPH< VARIABLES > &WCSPHpressure);
 
   PostProcessingHandler(double h,
                         Variables<double, double> &WCSPHnodes,
@@ -122,7 +122,7 @@ typename VARIABLES
 >
 void PostProcessingHandler<
 INTERPOLATION,
-KERNEL>::AddMeasurementPositions(MEASUREMENT_pressure< VARIABLES > &WCSPHpressure)
+KERNEL>::AddMeasurementPositions(MEASUREMENT_WCSPH< VARIABLES > &WCSPHpressure)
 {
 
   positions_id_measurement = pp_nsearch.add_point_set(&WCSPHpressure.positions.front().x,
@@ -205,7 +205,7 @@ typename VARIABLES
 >
 void PostProcessingHandler<
 INTERPOLATION,
-KERNEL>::Measure(MEASUREMENT_pressure< VARIABLES > &WCSPHpressure,
+KERNEL>::Measure(MEASUREMENT_WCSPH< VARIABLES > &WCSPHpressure,
                  Variables<double, double> &WCSPHfluid,
                  Variables<double, double> &WCSPHbound,
                  ConstantVariables WCSPHconstants)

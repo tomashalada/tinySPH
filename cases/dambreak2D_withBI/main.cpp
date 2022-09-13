@@ -91,13 +91,13 @@ int main(){
   > WCSPHmeasurement(WCSPHconstants.h*2, WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound);
 
   //Measure pressure in control points
-  MEASUREMENT_pressure<
+  MEASUREMENT_WCSPH<
   Variables<double, double>
-  > measurePressure(pressureSensors, initTimeStep);
-  measurePressure.sensors.initializeWithGeometryFile(caseFolder + "/dambreak_sensors.ptcs");
-  std::cout << "Number of sensor: " << measurePressure.sensors.N << std::endl;
+  > WCSPHsensors(4, initTimeStep);
+  WCSPHsensors.sensors.initializeWithGeometryFile(caseFolder + "/dambreak_sensors.ptcs");
+  std::cout << "Number of sensor: " << WCSPHsensors.sensors.N << std::endl;
 
-  WCSPH.AddSensors(measurePressure);
+  WCSPH.AddSensors(WCSPHsensors);
 
 
 //-----------------------------------------------------------------------------------//
@@ -148,9 +148,8 @@ for(int step = 0; step < stepEnd + 1; step++)
     WCSPHVerlet.ComputeStep();
   }
 
-  //WCSPHmeasurement.Measure(measurePressure, WCSPHfluid, WCSPHbound, WCSPHconstants);
-  WCSPH.template Measure< Variables<double, double>, WCSPH_INTERPOLATION >(measurePressure, WCSPHfluid, WCSPHbound, WCSPHconstants);
-  measurePressure.StoreSensorsData();
+  WCSPH.template Measure< Variables<double, double>, WCSPH_INTERPOLATION >(WCSPHsensors, WCSPHfluid, WCSPHbound, WCSPHconstants);
+  WCSPHsensors.StoreSensorsData();
 
   if(step % saveOutput == 0){
     writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/FLUID/fluid", step));
@@ -164,7 +163,7 @@ for(int step = 0; step < stepEnd + 1; step++)
 
 //-----------------------------------------------------------------------------------//
 
-  measurePressure.WritePressureToFile(caseResults + "/pressure.dat");
+  WCSPHsensors.WritePressureToFile(caseResults + "/pressure.dat");
   std::cout << "Done..." << std::endl;
 
   return EXIT_SUCCESS;
