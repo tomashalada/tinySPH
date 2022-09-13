@@ -21,12 +21,14 @@ for i in $geometries; do
   echo $CaseFolder/$i/dambreak_fluid.ptcs
   echo $CaseFolder/$i/dambreak_wall.ptcs
   echo $CaseFolder/$i/dambreak_interpolationPlane.ptcs
+  echo $CaseFolder/$i/dambreak_sensors.ptcs
 
   echo Prepare case settings.
   cp $CaseFolder/$i/parameters.hpp $CaseFolder
   cp $CaseFolder/$i/dambreak_fluid.ptcs $CaseFolder
   cp $CaseFolder/$i/dambreak_wall.ptcs $CaseFolder
   cp $CaseFolder/$i/dambreak_interpolationPlane.ptcs $CaseFolder
+  cp $CaseFolder/$i/dambreak_sensors.ptcs $CaseFolder
   echo ... OK
 
   echo Create results folder.
@@ -55,6 +57,7 @@ for i in $geometries; do
   rm $CaseFolder/dambreak_fluid.ptcs
   rm $CaseFolder/dambreak_wall.ptcs
   rm $CaseFolder/dambreak_interpolationPlane.ptcs
+  rm $CaseFolder/dambreak_sensors.ptcs
   echo ... OK
   echo ''
 

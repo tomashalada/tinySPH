@@ -11,8 +11,8 @@
 //-----------------------------------------------------------------------------------//
 
  unsigned int saveOutput = 1000;                        // [steps]
- std::string caseFolder = "pathTemplate";
- std::string caseResults = "pathTemplate";
+ std::string caseFolder = "/home/tomas/Documents/testovaci/cpp/TINYSPH_lib/cases/dambreak2D_withBI";
+ std::string caseResults = "/home/tomas/Documents/temp/devel/OUTPUT_geometryLR";
 
 //-----------------------------------------------------------------------------------//
 

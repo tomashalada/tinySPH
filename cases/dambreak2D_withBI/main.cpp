@@ -43,6 +43,7 @@
 //-----------------------------------------------------------------------------------//
 
 #include "parameters.hpp"               // case configuration parameters
+#include "measurement.hpp"               // case configuration parameters
 
 //-----------------------------------------------------------------------------------//
 
@@ -88,6 +89,13 @@ int main(){
   WCSPH_INTERPOLATION,
   WendlandKernel
   > WCSPHmeasurement(WCSPHconstants.h*2, WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound);
+
+  //Measure pressure in control points
+  MEASUREMENT_pressure<
+  Variables<double, double>
+  > measurePressure(pressureSensors, initTimeStep);
+  measurePressure.sensors.initializeWithGeometryFile(caseFolder + "/dambreak_sensors.ptcs");
+  std::cout << "Number of sensor: " << measurePressure.sensors.N << std::endl;
 
 //-----------------------------------------------------------------------------------//
 // Symplectic integrator
@@ -137,6 +145,9 @@ for(int step = 0; step < stepEnd + 1; step++)
     WCSPHVerlet.ComputeStep();
   }
 
+  WCSPHmeasurement.Measure(measurePressure, WCSPHfluid, WCSPHbound, WCSPHconstants);
+  measurePressure.StoreSensorsData();
+
   if(step % saveOutput == 0){
     writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/FLUID/fluid", step));
     writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/BOUND/bound", step));
@@ -149,6 +160,7 @@ for(int step = 0; step < stepEnd + 1; step++)
 
 //-----------------------------------------------------------------------------------//
 
+  measurePressure.WritePressureToFile(caseResults + "/pressure.dat");
   std::cout << "Done..." << std::endl;
 
   return EXIT_SUCCESS;
