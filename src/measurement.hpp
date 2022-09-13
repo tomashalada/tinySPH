@@ -36,8 +36,8 @@ public:
 
   VARIABLES sensors;
 
-  MEASUREMENT_pressure( std::vector< Vector3d > _positions, float dt)
-  : positions( _positions )
+  MEASUREMENT_pressure( std::vector< Vector3d > _positions, float _dt)
+  : positions( _positions ), dt( _dt )
   {
 
   }
@@ -57,8 +57,8 @@ public:
     file.open( fileName );
 
     for( int i = 0; i < p1.size(); i++ )
-      for( int j = 0; j < sensors.N; j++ )
-        file << dt*i << " " << p1[ i ] << p2[ i ] << p3[ i ] << p4[ i ] << std::endl;
+      //for( int j = 0; j < sensors.N; j++ )
+        file << dt*i << " " << p1[ i ] << " " << p2[ i ] << " " << p3[ i ] << " " << p4[ i ] << std::endl;
 
     file.close();
   }

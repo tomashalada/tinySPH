@@ -97,6 +97,9 @@ int main(){
   measurePressure.sensors.initializeWithGeometryFile(caseFolder + "/dambreak_sensors.ptcs");
   std::cout << "Number of sensor: " << measurePressure.sensors.N << std::endl;
 
+  WCSPH.AddSensors(measurePressure);
+
+
 //-----------------------------------------------------------------------------------//
 // Symplectic integrator
 
@@ -145,7 +148,8 @@ for(int step = 0; step < stepEnd + 1; step++)
     WCSPHVerlet.ComputeStep();
   }
 
-  WCSPHmeasurement.Measure(measurePressure, WCSPHfluid, WCSPHbound, WCSPHconstants);
+  //WCSPHmeasurement.Measure(measurePressure, WCSPHfluid, WCSPHbound, WCSPHconstants);
+  WCSPH.template Measure< Variables<double, double>, WCSPH_INTERPOLATION >(measurePressure, WCSPHfluid, WCSPHbound, WCSPHconstants);
   measurePressure.StoreSensorsData();
 
   if(step % saveOutput == 0){

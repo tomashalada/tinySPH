@@ -84,8 +84,10 @@ KERNEL>::PostProcessingHandler(double h,
 
   //pp_nsearch.set_active(positions_id, positions_id_nodes, false);
   //pp_nsearch.set_active(positions_id, positions_id_wall, false);
-  pp_nsearch.set_active(positions_id_nodes, positions_id, true);
-  pp_nsearch.set_active(positions_id_nodes, positions_id_wall, true);
+
+  //temp
+  //pp_nsearch.set_active(positions_id_nodes, positions_id, true);
+  //pp_nsearch.set_active(positions_id_nodes, positions_id_wall, true);
 
 }
 
@@ -103,7 +105,8 @@ KERNEL>::AddInterpolationPlane(Variables<double, double> &WCSPHinterplationNodes
   positions_id_nodes = pp_nsearch.add_point_set(&WCSPHinterplationNodes.r.front().x,
                                                 WCSPHinterplationNodes.N);
 
-  pp_nsearch.set_active(positions_id_nodes, positions_id, true);
+  //temp
+  //pp_nsearch.set_active(positions_id_nodes, positions_id, true);
 
 }
 
@@ -126,6 +129,7 @@ KERNEL>::AddMeasurementPositions(MEASUREMENT_pressure< VARIABLES > &WCSPHpressur
                                                       WCSPHpressure.positions.size());
 
   pp_nsearch.set_active(positions_id_measurement, positions_id, true);
+  pp_nsearch.set_active(positions_id_measurement, positions_id_wall, true);
 
 }
 
@@ -147,6 +151,9 @@ KERNEL>::Interpolate(Variables<double, double> &WCSPHnodes,
   //Compute pressure from density
   DensityToPressure(WCSPHfluid, WCSPHconstants);
   DensityToPressure(WCSPHbound, WCSPHconstants);
+
+  pp_nsearch.set_active(positions_id_nodes, positions_id, true);
+  pp_nsearch.set_active(positions_id_nodes, positions_id_wall, true);
 
   pp_nsearch.find_neighbors();
 
@@ -180,6 +187,9 @@ KERNEL>::Interpolate(Variables<double, double> &WCSPHnodes,
 
     ptcI.CopyDataOut(WCSPHnodes, i);
   }
+
+  pp_nsearch.set_active(positions_id_nodes, positions_id, false);
+  pp_nsearch.set_active(positions_id_nodes, positions_id_wall, false);
 
 
 }
@@ -224,16 +234,16 @@ KERNEL>::Measure(MEASUREMENT_pressure< VARIABLES > &WCSPHpressure,
       INTERPOLATION::template FluidFluidInterpolation<double, double, KERNEL>(ptcI, ptcJ, WCSPHconstants);
     }
 
-    //:
-    //://Get point set 1 neighbors of point set 2.
-    //:for (size_t j = 0; j < ps_1.n_neighbors(positions_id_wall, i); ++j)
-    //:{
-    //:  const unsigned int pid = ps_1.neighbor(positions_id_wall, i, j);
-    //:  ptcJ.CopyDataIn(WCSPHbound, pid);
-    //:  INTERPOLATION::template FluidFluidInterpolation<double, double, KERNEL>(ptcI, ptcJ, WCSPHconstants);
-    //:}
-    //:std::cout << std::endl;
-    //:
+    /*
+    //Get point set 1 neighbors of point set 2.
+    for (size_t j = 0; j < ps_1.n_neighbors(positions_id_wall, i); ++j)
+    {
+      const unsigned int pid = ps_1.neighbor(positions_id_wall, i, j);
+      ptcJ.CopyDataIn(WCSPHbound, pid);
+      INTERPOLATION::template FluidFluidInterpolation<double, double, KERNEL>(ptcI, ptcJ, WCSPHconstants);
+    }
+    std::cout << std::endl;
+    */
 
     ptcI.CopyDataOut(WCSPHpressure.sensors, i);
   }
