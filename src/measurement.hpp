@@ -12,16 +12,16 @@
 
 //-----------------------------------------------------------------------------------//
 
-/* class MEASUREMENT
+class MEASUREMENT
 {
   public:
 
-}; */
+};
 
 //-----------------------------------------------------------------------------------//
 
 template< typename VARIABLES = Variables< double, double > >
-class MEASUREMENT_pressure
+class MEASUREMENT_pressure: public MEASUREMENT
 {
 public:
 
