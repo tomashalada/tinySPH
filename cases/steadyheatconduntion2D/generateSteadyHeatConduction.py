@@ -7,18 +7,18 @@
 #-------------------------------------------------------------------------------------#
 # Parameters of initial state
 
-dp = 0.02                                   #initial particle distance
+dp = 0.0025                                 #initial particle distance
 
-solidL = 1.0 - dp                           #length of solid
-solidH = 1.0 - dp                           #height of solid
-boundaryL = 1.0 + dp                        #length of boundary
-boundaryH = 1.0 + dp                        #height of boundary
+solidL = 0.1 - dp                           #length of solid
+solidH = 0.1 - dp                           #height of solid
+boundaryL = 0.1 + dp                        #length of boundary
+boundaryH = 0.1 + dp                        #height of boundary
 
 n_layers = 3                                #number of boundary layers
 
-rho0 = 1000.                                #initial (referential) density
-T0 = 0.                                     #initial temperature
-TB = 100.                                   #boundary temperature
+rho0 = 8000.                                #initial (referential) density
+T0 = 100.                                     #initial temperature
+TB = 0.                                   #boundary temperature
 
 #-------------------------------------------------------------------------------------#
 # Generate interpolation grid

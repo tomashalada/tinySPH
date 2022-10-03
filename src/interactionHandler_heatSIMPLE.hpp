@@ -18,12 +18,6 @@
 
 //-----------------------------------------------------------------------------------//
 
-#include "interpolationStructures.hpp"
-#include "measurement.hpp"
-
-//-----------------------------------------------------------------------------------//
-
-
 template<
 typename SOLID_SOLID,
 typename SOLID_BOUND,
@@ -117,7 +111,7 @@ KERNEL>::Interact(Variables<double, double> &HEAT_SIMPLEsolid,
     {
       const unsigned int pid = ps_1.neighbor(positions_id, i, j);
       ptcJ.CopyDataIn(HEAT_SIMPLEsolid, pid);
-      SOLID_SOLID::template FluidFluidInteraction<double, double, KERNEL>(ptcI, ptcJ, HEAT_SIMPLEconstants);
+      SOLID_SOLID::template SolidSolidInteraction<double, double, KERNEL>(ptcI, ptcJ, HEAT_SIMPLEconstants);
     }
 
     //Get point set 1 neighbors of point set 2.
@@ -125,7 +119,7 @@ KERNEL>::Interact(Variables<double, double> &HEAT_SIMPLEsolid,
     {
       const unsigned int pid = ps_1.neighbor(positions_id_wall, i, j);
       ptcJ.CopyBoundaryDataIn(HEAT_SIMPLEbound, pid);
-      SOLID_BOUND::template FluidBoundInteraction<double, double, KERNEL, DIFFUSIVE_TERM, VISOUCS_TERM>(ptcI, ptcJ, HEAT_SIMPLEconstants);
+      SOLID_BOUND::template SolidBoundInteraction<double, double, KERNEL>(ptcI, ptcJ, HEAT_SIMPLEconstants);
     }
 
     ptcI.CopyDataOut(HEAT_SIMPLEsolid, i);

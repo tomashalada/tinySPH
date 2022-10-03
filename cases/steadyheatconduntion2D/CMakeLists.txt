@@ -1,14 +1,13 @@
 add_definitions(-D_USE_MATH_DEFINES)
 
 include_directories("../../libs/include")
-include_directories("../../src_stillWater")
-include_directories("../../src_stillWater/general")
-include_directories("../../src_stillWater/WCSPH_BI")
-include_directories("measuretools")
+include_directories("../../src")
+include_directories("../../src/general")
+include_directories("../../src/heatSIMPLE")
 
-add_executable(stillwater2D_BI
+add_executable(heatequation
     main.cpp
 )
 
 find_package(OpenMP REQUIRED)
-target_link_libraries(stillwater2D_BI CompactNSearch OpenMP::OpenMP_CXX)
+target_link_libraries(heatequation CompactNSearch OpenMP::OpenMP_CXX)

@@ -12,7 +12,6 @@
 #include "variables.hpp"
 
 #include "kernel.hpp"
-#include "pressureAndEOS.hpp"
 
 //----------------------------------------------------------------------------------//
 
@@ -53,8 +52,8 @@ void InteractionData<K, S>::CopyDataIn(Variables<K, S> &vars,  unsigned int i)
 
 //----------------------------------------------------------------------------------//
 
-template<typename T, typename S>
-void InteractionData<T, S>::CopyBoundaryDataIn(Variables<T, S> &vars,  unsigned int i)
+template<typename K, typename S>
+void InteractionData<K, S>::CopyBoundaryDataIn(Variables<K, S> &vars,  unsigned int i)
 {
 
   this -> r = vars.r[i];
@@ -66,8 +65,8 @@ void InteractionData<T, S>::CopyBoundaryDataIn(Variables<T, S> &vars,  unsigned 
 
 //----------------------------------------------------------------------------------//
 
-template<typename T, typename S>
-void InteractionData<T, S>::CopyDataOut(Variables<T, S> &vars,  unsigned int i)
+template<typename K, typename S>
+void InteractionData<K, S>::CopyDataOut(Variables<K, S> &vars,  unsigned int i)
 {
 
   vars.dT[i] = dT;
@@ -76,8 +75,8 @@ void InteractionData<T, S>::CopyDataOut(Variables<T, S> &vars,  unsigned int i)
 
 //----------------------------------------------------------------------------------//
 
-template<typename T, typename S>
-void InteractionData<T, S>::CopyBoundaryDataOut(Variables<T, S> &vars,  unsigned int i)
+template<typename K, typename S>
+void InteractionData<K, S>::CopyBoundaryDataOut(Variables<K, S> &vars,  unsigned int i)
 {
 
 }
@@ -106,7 +105,10 @@ static void SolidSolidInteraction(InteractionData<K, S> &I,
   double F = KERNEL::F(drs, h);
   Vector3<double> gradW = dr*F;
 
-  I.dT += (1/cp)*(2*lambda/(I.rho*J.rho))*(I.T - J.T)*dot(dr, gradW)*m/(drs*drs);
+  //I.dT += (1/cp)*(2*lambda/(I.rho*J.rho))*(I.T - J.T)*dot(dr, gradW)*m/(drs*drs);
+  //I.dT += 1./J.rho*(I.T - J.T)*dot(dr, gradW)*m/(drs*drs);
+  I.dT += 2./(I.rho*J.rho)*(I.T - J.T)*dot(dr, gradW)*m/(drs*drs);
+  //I.dT += (I.T - J.T)*dot(dr, gradW)/(drs) * (dp*dp);
 
 }
 
@@ -136,7 +138,9 @@ static void SolidBoundInteraction(InteractionData<K, S> &I,
   double F = KERNEL::F(drs, h);
   Vector3<double> gradW = dr*F;
 
-  I.dT += (1/cp)*(2*lambda/(I.rho*J.rho))*(I.T - J.T)*dot(dr, gradW)*m/(drs*drs);
+  //I.dT += (1/cp)*(2*lambda/(I.rho*J.rho))*(I.T - J.T)*dot(dr, gradW)*m/(drs*drs);
+  I.dT += 2./(I.rho*J.rho)*(I.T - J.T)*dot(dr, gradW)*m/(drs*drs);
+  //I.dT += (I.T - J.T)*dot(dr, gradW)/(drs) * (dp*dp);
 
 }
 

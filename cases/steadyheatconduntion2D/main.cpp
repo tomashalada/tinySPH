@@ -23,9 +23,9 @@
 
 //-----------------------------------------------------------------------------------//
 
-#include "variables.hpp"                // variables of used model
-#include "interactionHandlerMDBC.hpp"   // interaction manager
-#include "integration.hpp"              // integrators (connected to the model)
+#include "variables.hpp"                       // variables of used model
+#include "interactionHandler_heatSIMPLE.hpp"   // interaction manager
+#include "integration.hpp"                     // integrators (connected to the model)
 
 //-----------------------------------------------------------------------------------//
 
@@ -71,9 +71,9 @@ int main(){
   InteractionHandler<
   heatSIMPLE_SOLIDSOLID,                // solid-solid interaction model
   heatSIMPLE_SOLIDBOUND,                // solid-boundary interaction model
-  heatSIMPLE_BD,                        // wall particle update model
+  heatSIMPLE_BC,                        // wall particle update model
   WendlandKernel                        // SPH kernel function
-  > HEAT_EQN(WCSPHconstants.h*2, HEAT_EQNsolid, HEAT_EQNbound);
+  > HEAT_EQN(HEAT_EQNconstants.h*2, HEAT_EQNsolid, HEAT_EQNbound);
 
 //-----------------------------------------------------------------------------------//
 
@@ -92,42 +92,27 @@ int main(){
 //-----------------------------------------------------------------------------------//
 // Verlet integrator
 
-VerletScheme WCSPHVerlet(&WCSPHfluid, initTimeStep);
+EulerScheme HEAT_EQNEuler(&HEAT_EQNsolid, initTimeStep);
 
 for(int step = 0; step < stepEnd + 1; step++)
 {
 
   std::cout << "STEP: " << step << std::endl;
-  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
+  HEAT_EQN.Interact(HEAT_EQNsolid, HEAT_EQNbound, HEAT_EQNconstants, false);
 
-  if(step % 20 == 0){
-  WCSPHVerlet.ComputeStepEulerForStability();
-  }
-  else{
-  WCSPHVerlet.ComputeStep();
-  }
+  HEAT_EQNEuler.ComputeStep();
 
   if(step % saveOutput == 0){
-    writeParticleData(WCSPHfluid, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/FLUID/fluid", step));
-    writeParticleData(WCSPHbound, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/BOUND/bound", step));
+    writeParticleData(HEAT_EQNsolid, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/SOLID/solid", step));
+    writeParticleData(HEAT_EQNbound, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/BOUND/bound", step));
 
-  WCSPHmeasurement.Interpolate(WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound, WCSPHconstants);
-  writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/INTERPOLATION/interpolation", step));
+  //writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/INTERPOLATION/interpolation", step));
   }
-
-  //Custom measuretools
-  //MeasureTotalKineticEnergyOfSystem(WCSPHfluid, WCSPHconstants, step*0.0001, (caseResults + "/OUTPUT/TotalKineticEnergy.dat"));
-  WCSPHEkinTot.ComputeKineticEnergy(WCSPHfluid, WCSPHconstants);
-  WCSPHtrackParticles.TrackParticles(WCSPHfluid);
 
 }
 
-
 //-----------------------------------------------------------------------------------//
 
-  WCSPHEkinTot.WriteTotalKinetcEnergyToFile(caseResults + "/TotalKineticEnergy.dat");
-  WCSPHtrackParticles.WriteParticleTrajectoryToFile(caseResults + "/ParticleTrajectory"); //no .dat here!
-  WCSPHtrackParticles.WriteParticleVelocityToFile(caseResults + "/ParticleVelocity"); //no .dat here!
   std::cout << "Done..." << std::endl;
 
   return EXIT_SUCCESS;

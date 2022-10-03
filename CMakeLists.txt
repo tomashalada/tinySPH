@@ -114,3 +114,11 @@ option(BUILD_STILLWATER2D_MDBC_PERIODIC "Build example of how to use this librar
 if(BUILD_STILLWATER2D_MDBC_PERIODIC)
     add_subdirectory(cases/stillwater2D_withMDBC_periodic stillwater2D_withMDBC_periodic)
 endif(BUILD_STILLWATER2D_MDBC_PERIODIC)
+
+# Heatequation
+option(BUILD_HEATEQUATION2D "Build example of how to use this library."
+		ON)
+if(BUILD_HEATEQUATION2D)
+    add_subdirectory(cases/steadyheatconduntion2D heatequation)
+endif(BUILD_HEATEQUATION2D)
+

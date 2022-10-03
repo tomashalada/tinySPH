@@ -103,7 +103,7 @@ int main(){
 //-----------------------------------------------------------------------------------//
 
   PressureToDensity(WCSPHfluid, WCSPHconstants);
-  //WCSPH.UpdateBoundary(WCSPHfluid, WCSPHbound, WCSPHconstants);
+  WCSPH.UpdateBoundary(WCSPHfluid, WCSPHbound, WCSPHconstants);
 
 //-----------------------------------------------------------------------------------//
 // Symplectic integrator
@@ -120,14 +120,26 @@ for(int step = 0; step < stepEnd + 1; step++)
 
   WCSPHSymplecticFluid.ComputePredictor();
   WCSPHSymplecticBound.ComputePredictor();
-  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
+
+  #pragma omp parallel for schedule(static)
+  for( int p = 0; p < WCSPHbound.N; p++ )
+    if (WCSPHbound.rho[p] < 1000. )
+      WCSPHbound.rho[p] = 1000.;
+
+  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, true);
 
   DensityToPressure(WCSPHfluid, WCSPHconstants);
   DensityToPressure(WCSPHbound, WCSPHconstants);
 
   WCSPHSymplecticFluid.ComputeCorrector();
   WCSPHSymplecticBound.ComputeCorrector();
-  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants);
+
+  #pragma omp parallel for schedule(static)
+  for( int p = 0; p < WCSPHbound.N; p++ )
+    if (WCSPHbound.rho[p] < 1000. )
+      WCSPHbound.rho[p] = 1000.;
+
+  WCSPH.Interact(WCSPHfluid, WCSPHbound, WCSPHconstants, true);
 
   if(step % saveOutput == 0)
   {
