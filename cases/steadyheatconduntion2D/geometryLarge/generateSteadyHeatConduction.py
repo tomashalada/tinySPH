@@ -7,18 +7,18 @@
 #-------------------------------------------------------------------------------------#
 # Parameters of initial state
 
-dp = 0.0025                                 #initial particle distance
+dp = 0.02                                   #initial particle distance
 
-solidL = 0.1 - dp                           #length of solid
-solidH = 0.1 - dp                           #height of solid
-boundaryL = 0.1 + dp                        #length of boundary
-boundaryH = 0.1 + dp                        #height of boundary
+solidL = 1.0 - dp                           #length of solid
+solidH = 1.0 - dp                           #height of solid
+boundaryL = 1.0 + dp                        #length of boundary
+boundaryH = 1.0 + dp                        #height of boundary
 
 n_layers = 3                                #number of boundary layers
 
-rho0 = 8000.                                #initial (referential) density
-T0 = 100.                                     #initial temperature
-TB = 0.                                   #boundary temperature
+rho0 = 1000.                                #initial (referential) density
+T0 = 0.                                     #initial temperature
+TB = 100.                                   #boundary temperature
 
 #-------------------------------------------------------------------------------------#
 # Generate interpolation grid
@@ -136,10 +136,11 @@ for x in range(interpolationL_n-1):
 #-------------------------------------------------------------------------------------#
 
 # Write boundary particles
-with open("heatconduction_interpolationPlane.ptcs", "w") as f:
+with open("stillwater_interpolationPlane.ptcs", "w") as f:
   f.write(str(len(IN_rx)) + "\n")
   for i in range(len(IN_rx)):
-    f.write(str(round(IN_rx[i], 5)) + " " + str(round(IN_ry[i], 5)) + " " + str(round(IN_rz[i], 5)) + " " + \
-            str(round(rho0, 5)) + " " + str(round(T0)) + "\n")
+    f.write(str(IN_rx[i]) + " " + str(IN_ry[i]) + " " + str(IN_rz[i]) + " " + \
+            str(0.) + " " + str(0.) + " " + str(0.) + " " + \
+            str(0.) + " " + str(0.) + "\n")
 
 #-------------------------------------------------------------------------------------#

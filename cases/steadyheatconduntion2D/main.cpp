@@ -29,10 +29,8 @@
 
 //-----------------------------------------------------------------------------------//
 
-/*
 #include "interpolationStructures.hpp"  // definition of particle-particle interactions
-#include "postprocessor.hpp"            // interpolation and measuretools
-*/
+#include "postprocessor_heatSIMPLE.hpp" // interpolation and measuretools
 
 //-----------------------------------------------------------------------------------//
 
@@ -77,17 +75,15 @@ int main(){
 
 //-----------------------------------------------------------------------------------//
 
-  /*
   //Interpolation nodes
-  FluidVars<double, double> WCSPHinterpolationPlane;
-  WCSPHinterpolationPlane.initializeWithGeometryFile(caseFolder + "/stillwater_interpolationPlane.ptcs");
-  std::cout << "Number of nodes in interpolation plane: " << WCSPHinterpolationPlane.N << std::endl;
+  SolidVars<double, double> HEAT_EQNinterpolationPlane;
+  HEAT_EQNinterpolationPlane.initializeWithGeometryFile(caseFolder + "/heatconduction_interpolationPlane.ptcs");
+  std::cout << "Number of nodes in interpolation plane: " << HEAT_EQNinterpolationPlane.N << std::endl;
 
   PostProcessingHandler<
-  WCSPH_INTERPOLATION,
+  heatSIMPLE_INTERPOLATION,
   WendlandKernel
-  > WCSPHmeasurement(WCSPHconstants.h*2, WCSPHinterpolationPlane, WCSPHfluid, WCSPHbound);
-  */
+  > HEAT_EQNmeasurement(HEAT_EQNconstants.h*2, HEAT_EQNinterpolationPlane, HEAT_EQNsolid, HEAT_EQNbound);
 
 //-----------------------------------------------------------------------------------//
 // Verlet integrator
@@ -106,7 +102,9 @@ for(int step = 0; step < stepEnd + 1; step++)
     writeParticleData(HEAT_EQNsolid, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/SOLID/solid", step));
     writeParticleData(HEAT_EQNbound, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/BOUND/bound", step));
 
-  //writeParticleData(WCSPHinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/INTERPOLATION/interpolation", step));
+    HEAT_EQNmeasurement.Interpolate(HEAT_EQNinterpolationPlane, HEAT_EQNsolid, HEAT_EQNbound, HEAT_EQNconstants);
+    writeParticleData(HEAT_EQNinterpolationPlane, stepToNameWithPtcsExtension(caseResults + "/OUTPUT/INTERPOLATION/interpolation", step));
+
   }
 
 }

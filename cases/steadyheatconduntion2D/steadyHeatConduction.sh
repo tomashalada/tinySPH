@@ -44,6 +44,8 @@ python generateSteadyHeatConduction.py
 python ../../tools/PTCStoVTKheatSimple.py -input="heatconduction_solid.ptcs" -output="heatconduction_solid.vtk"
 #Bound
 python ../../tools/PTCStoVTKheatSimple.py -input="heatconduction_boundary.ptcs" -output="heatconduction_boundary.vtk"
+#Interpolation
+python ../../tools/PTCStoVTKheatSimple.py -input="heatconduction_interpolationPlane.ptcs" -output="heatconduction_interpolationPlane.vtk"
 
 echo ... DONE.
 
@@ -83,17 +85,17 @@ do
 	python ../../tools/PTCStoVTKheatSimple.py -input="$f" -output="$fileVTK"
 done
 
-#:#Interpolation
-#:for f in $SaveResults/OUTPUT/INTERPOLATION/*
-#:do
-#:	echo $f
-#:	fileIn=${f%.*}
-#:	fileVTK=$fileIn.vtk
-#:	#python ../../tools/PTCStoVTKstructuredGrid.py -input="$f" -output="$fileVTK"
-#:	python ../../tools/structuredGridSimple.py -input="$f" -output="$fileVTK"
-#:done
-#:
-#:echo ... Postprocessing DONE.
-#:
-#:#-------------------------------------------------------------------------------------#
+#Interpolation
+for f in $SaveResults/OUTPUT/INTERPOLATION/*
+do
+	echo $f
+	fileIn=${f%.*}
+	fileVTK=$fileIn.vtk
+	#python ../../tools/PTCStoVTKstructuredGrid.py -input="$f" -output="$fileVTK"
+	python ../../tools/structuredGridSimpleheatSimple.py -input="$f" -output="$fileVTK"
+done
+
+echo ... Postprocessing DONE.
+
+#-------------------------------------------------------------------------------------#
 
